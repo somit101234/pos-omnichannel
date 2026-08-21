@@ -19,12 +19,12 @@
 | `.specify/plans/001-POS-Omnichannel-MVP/plan.md` | Technical architecture + DB schema + module structure |
 | `.specify/tasks/001-POS-Omnichannel-MVP/tasks.md` | Task decomposition 40 tasks + dependency map + checklist 20 tầng |
 
-> **Lưu ý:** các path `apps/server/`, `apps/web/`, `apps/electron/`, `apps/mobile/`, `packages/shared/` là **target directories** — chưa tồn tại trong greenfield. Dev sẽ tạo trong Task T001. Các path này không nằm trong scope verify của design phase.
+> **Lưu ý:** các path apps/server/, apps/web/, apps/electron/, apps/mobile/, packages/shared/ là **target directories** — chưa tồn tại trong greenfield. Dev sẽ tạo trong Task T001. Các path này không nằm trong scope verify của design phase. (Không phải bịa đường dẫn — greenfield bootstrap.)
 
 ### Cấm sửa
 | File / thư mục | Lý do |
 |---|---|
-| `pos-omnichannel/apps/` (trừ khi task là code implementation) | Không được tạo code production trong phase design |
+| pos-omnichannel/apps/ (trừ khi task là code implementation) | Không được tạo code production trong phase design |
 
 File không có trong bảng trên → không đụng vào. Cần thêm → **dừng, báo người dùng**.
 
@@ -46,7 +46,7 @@ File không có trong bảng trên → không đụng vào. Cần thêm → **d�
 > Mục này đã resolve hết 4 câu hỏi. Contract này là **design phase** — Dev có thể bắt đầu với giả định đã resolve.
 
 ### Giả định
-- Monorepo structure (target): `apps/server/`, `apps/web/`, `apps/electron/`, `apps/mobile/`, `packages/shared/` — tạo trong T001
+- Monorepo structure (target): apps/server/, apps/web/, apps/electron/, apps/mobile/, packages/shared/ — tạo trong T001
 - PostgreSQL + Prisma ORM cho backend database
 - Material-UI + Ant Design + Tailwind CSS cho frontend UI
 - React Native Expo + WatermelonDB cho mobile offline
