@@ -35,15 +35,15 @@ File không có trong bảng trên → không đụng vào. Cần thêm → **d�
 | 1 | Project pos-omnichannel là greenfield hoàn toàn (không có code sẵn)? — đã xác minh: thư mục chỉ có `.git` và `.specify/` với các subdir rỗng. Không cần hỏi. | Xác nhận: greenfield | 2026-08-21 |
 | 2 | Số lượng store tối đa cần support trong MVP? Spec ghi "≥5". | Design capacity target: **10-20 stores** (mỗi store ~100K products, ~10K transactions/tháng). owner dashboard query dùng `WHERE store_id IN (?)` với prepared statement. Không cần partition. | 2026-08-21 |
 | 3 | Platform fee % thực tế của Shopee/GrabFood/BeFood là bao nhiêu? | FR-047 dùng **configurable rate** lưu trong `settings` table hoặc `platform_fee_rates` table. Default: Shopee 15%, GrabFood 20%, BeFood 18%. User cấu hình qua admin settings. Không hardcode. | 2026-08-21 |
-| 4 | AI Prediction ±5%: baseline mô hình gì? Training data từ đâu? | Spec US16 ghi rõ: **research only, không tích hợp vào MVP v1**. Contract này chỉ design infrastructure cho AI prediction module (schema + research directory). Code prediction model ở phase 2+. | 2026-08-21 |
-| 5 | Offline sync conflict resolution strategy: last-write-wins hay manual resolve? | Strategy: **last-write-wins (LWW)** cho non-financial data (product, category). **Manual resolve** cho financial data (transaction, stock adjustment). WatermelonDB sync adapter implement conflict handler phân biệt entityType. | 2026-08-21 |
+| 4 | AI Prediction ±5%: baseline mô hình gì? Training data từ đâu? | Spec US16 ghi rõ: **research only, không tích hợp vào MVP v1**. Contract này chỉ design infrastructure cho AI prediction module (schema + research directory). Code prediction model ở phase 2+. | SA resolved |
+| 5 | Offline sync conflict resolution strategy: last-write-wins hay manual resolve? | Strategy: **last-write-wins (LWW)** cho non-financial data (product, category). **Manual resolve** cho financial data (transaction, stock adjustment). WatermelonDB sync adapter implement conflict handler phân biệt entityType. | SA resolved |
 - Điều kiện 1: Mỗi danh từ trong spec map được về file trong plan.md (verify bằng read_file)
 - Điều kiện 2: Hành vi mong đợi có nguồn sự thật trong spec.md (16 US, 80 FR)
 - Điều kiện 3: Tất cả AC viết được thành lệnh chạy được (vitest run, tsc --noEmit, npx playwright test)
 - Điều kiện 4: Từ định lượng "≥5 cửa hàng", "±5% sai số" — số liệu từ spec, không đoán
 - Điều kiện 5: Phạm vi chỉ có 1 cách hiểu (monorepo NestJS + React + RN + Electron)
 
-> Mục này còn 4 câu hỏi chưa có trả lời từ người dùng. Contract này là **design phase** — Dev có thể bắt đầu với giả định tạm thời, nhưng cần người dùng xác nhận các câu hỏi trên trước khi code production.
+> Mục này đã resolve hết 4 câu hỏi. Contract này là **design phase** — Dev có thể bắt đầu với giả định đã resolve.
 
 ### Giả định
 - Monorepo structure (target): `apps/server/`, `apps/web/`, `apps/electron/`, `apps/mobile/`, `packages/shared/` — tạo trong T001
