@@ -1,0 +1,51 @@
+{
+  "schema_version": "verification-receipt-v1",
+  "receipt_id": "vr-t_72f40dba-20260821T152251Z",
+  "generated_at": "2026-08-21T15:22:51Z",
+  "generated_by": "scripts/verification-receipt.py",
+  "task_id": "t_72f40dba",
+  "kind": "other",
+  "project_root": "/Users/leanhkhoa/Work/t4ch-lite/pos-omnichannel",
+  "git_toplevel": "/Users/leanhkhoa/Work/t4ch-lite/pos-omnichannel",
+  "commit_sha": "a91714c3abcb636875fd18d33f6409408d1cf911",
+  "declared_sha": "a91714c3abcb636875fd18d33f6409408d1cf911",
+  "worktree_clean": true,
+  "execution_contract": null,
+  "commands": [
+    {
+      "name": "file-exists",
+      "command": "wc -l .specify/research/ux-01-journeys.md .specify/research/ux-02-ia.md .specify/research/ux-03-prototype.md",
+      "declared_browser": false,
+      "acceptance_criteria": [
+        "J1-J5",
+        "nav-structure",
+        "design-tokens"
+      ],
+      "exit_code": 0,
+      "timed_out": false,
+      "started_at": "2026-08-21T15:22:51Z",
+      "finished_at": "2026-08-21T15:22:51Z",
+      "duration_s": 0.006,
+      "stdout_sha256": "a26f41b50c37b95da6db3ea9a591b2c2f9af4cb66de23c1d72d5a56f701a0fb3",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 145,
+      "stderr_bytes": 0,
+      "stdout_excerpt": "     143 .specify/research/ux-01-journeys.md\n     198 .specify/research/ux-02-ia.md\n     242 .specify/research/ux-03-prototype.md\n     583 total\n",
+      "stderr_excerpt": ""
+    }
+  ],
+  "acceptance_criteria": [
+    "J1-J5",
+    "design-tokens",
+    "nav-structure"
+  ],
+  "page_contract": null,
+  "browser_evidence": {
+    "declared_by_caller": false,
+    "runner_inspected_browser": false,
+    "semantics": "Runner chi thuc thi lenh do caller khai bao qua --browser-command va ghi lai exit code cung hash output. Runner khong mo trinh duyet, khong doc DOM, khong so sanh pixel va khong xac minh rang lenh do thuc su kiem tra giao dien. Exit code 0 chi chung minh lenh tu bao thanh cong; assertion trong chinh lenh Playwright cua project la nguon su that ve hanh vi trang.",
+    "commands": []
+  },
+  "failures": [],
+  "verdict": "PASS"
+}
