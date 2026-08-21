@@ -1,0 +1,65 @@
+{
+  "schema_version": "verification-receipt-v1",
+  "receipt_id": "vr-t_1cd941db-20260821T152339Z",
+  "generated_at": "2026-08-21T15:23:39Z",
+  "generated_by": "scripts/verification-receipt.py",
+  "task_id": "t_1cd941db",
+  "kind": "other",
+  "project_root": "/Users/leanhkhoa/Work/t4ch-lite/pos-omnichannel",
+  "git_toplevel": "/Users/leanhkhoa/Work/t4ch-lite/pos-omnichannel",
+  "commit_sha": "8563e0ee9e3d889d2d7ea54a980ac07df5e0cf0e",
+  "declared_sha": "8563e0ee9e3d889d2d7ea54a980ac07df5e0cf0e",
+  "worktree_clean": true,
+  "execution_contract": null,
+  "commands": [
+    {
+      "name": "artifacts",
+      "command": "wc -l .specify/contracts/2026-08-21-POS-Omnichannel-MVP.md .specify/plans/001-POS-Omnichannel-MVP/plan.md .specify/tasks/001-POS-Omnichannel-MVP/tasks.md .specify/research/001-POS-Omnichannel-MVP.md .specify/research/ux-01-journeys.md .specify/research/ux-02-ia.md .specify/research/ux-03-prototype.md .specify/memory/constitution.md .specify/risks.md",
+      "declared_browser": false,
+      "acceptance_criteria": [
+        "7-sections-29-steps-10-estimates",
+        "db-schema",
+        "module-structure",
+        "40-tasks",
+        "dependency-map",
+        "5-journeys",
+        "ia",
+        "prototype",
+        "constitution",
+        "risk-register"
+      ],
+      "exit_code": 0,
+      "timed_out": false,
+      "started_at": "2026-08-21T15:23:39Z",
+      "finished_at": "2026-08-21T15:23:39Z",
+      "duration_s": 0.009,
+      "stdout_sha256": "01d720b9ef020360a835f3a2ecdf1b4b4594e3ca6bf4c63d5909513522f276b7",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 442,
+      "stderr_bytes": 0,
+      "stdout_excerpt": "     257 .specify/contracts/2026-08-21-POS-Omnichannel-MVP.md\n     167 .specify/plans/001-POS-Omnichannel-MVP/plan.md\n     430 .specify/tasks/001-POS-Omnichannel-MVP/tasks.md\n      95 .specify/research/001-POS-Omnichannel-MVP.md\n     143 .specify/research/ux-01-journeys.md\n     198 .specify/research/ux-02-ia.md\n     242 .specify/research/ux-03-prototype.md\n      26 .specify/memory/constitution.md\n      11 .specify/risks.md\n    1569 total\n",
+      "stderr_excerpt": ""
+    }
+  ],
+  "acceptance_criteria": [
+    "40-tasks",
+    "5-journeys",
+    "7-sections-29-steps-10-estimates",
+    "constitution",
+    "db-schema",
+    "dependency-map",
+    "ia",
+    "module-structure",
+    "prototype",
+    "risk-register"
+  ],
+  "page_contract": null,
+  "browser_evidence": {
+    "declared_by_caller": false,
+    "runner_inspected_browser": false,
+    "semantics": "Runner chi thuc thi lenh do caller khai bao qua --browser-command va ghi lai exit code cung hash output. Runner khong mo trinh duyet, khong doc DOM, khong so sanh pixel va khong xac minh rang lenh do thuc su kiem tra giao dien. Exit code 0 chi chung minh lenh tu bao thanh cong; assertion trong chinh lenh Playwright cua project la nguon su that ve hanh vi trang.",
+    "commands": []
+  },
+  "failures": [],
+  "verdict": "PASS"
+}
