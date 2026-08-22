@@ -19,6 +19,7 @@
     "noFallthroughCasesInSwitch": true,
     "resolveJsonModule": true,
     "esModuleInterop": true,
+    "jsx": "react-jsx",
     "types": ["react", "react-dom", "node"]
   },
   "include": ["apps/**/*", "packages/**/*"],
