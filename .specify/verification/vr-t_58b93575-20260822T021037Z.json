@@ -1,0 +1,64 @@
+{
+  "schema_version": "verification-receipt-v1",
+  "receipt_id": "vr-t_58b93575-20260822T021037Z",
+  "generated_at": "2026-08-22T02:10:39Z",
+  "generated_by": "scripts/verification-receipt.py",
+  "task_id": "t_58b93575",
+  "kind": "other",
+  "project_root": "/Users/leanhkhoa/Work/t4ch-lite/pos-omnichannel",
+  "git_toplevel": "/Users/leanhkhoa/Work/t4ch-lite/pos-omnichannel",
+  "commit_sha": "e756b3e1f6cbdbc49539f27efc89e3d0c3deffa7",
+  "declared_sha": "e756b3e1f6cbdbc49539f27efc89e3d0c3deffa7",
+  "worktree_clean": false,
+  "execution_contract": null,
+  "commands": [
+    {
+      "name": "typecheck",
+      "command": "npx tsc --noEmit",
+      "declared_browser": false,
+      "acceptance_criteria": [
+        "AC-1"
+      ],
+      "exit_code": 0,
+      "timed_out": false,
+      "started_at": "2026-08-22T02:10:37Z",
+      "finished_at": "2026-08-22T02:10:39Z",
+      "duration_s": 1.716,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 0,
+      "stderr_bytes": 0,
+      "stdout_excerpt": "",
+      "stderr_excerpt": ""
+    },
+    {
+      "name": "verify",
+      "command": "ls -d apps/server apps/web apps/electron apps/mobile packages/shared packages/config | wc -l",
+      "declared_browser": false,
+      "acceptance_criteria": [],
+      "exit_code": 0,
+      "timed_out": false,
+      "started_at": "2026-08-22T02:10:39Z",
+      "finished_at": "2026-08-22T02:10:39Z",
+      "duration_s": 0.009,
+      "stdout_sha256": "d30eefd6e7ddf84a0a1191595c6957236f2beb053a37e38d226a67ea3ee9b865",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 9,
+      "stderr_bytes": 0,
+      "stdout_excerpt": "       6\n",
+      "stderr_excerpt": ""
+    }
+  ],
+  "acceptance_criteria": [
+    "AC-1"
+  ],
+  "page_contract": null,
+  "browser_evidence": {
+    "declared_by_caller": false,
+    "runner_inspected_browser": false,
+    "semantics": "Runner chi thuc thi lenh do caller khai bao qua --browser-command va ghi lai exit code cung hash output. Runner khong mo trinh duyet, khong doc DOM, khong so sanh pixel va khong xac minh rang lenh do thuc su kiem tra giao dien. Exit code 0 chi chung minh lenh tu bao thanh cong; assertion trong chinh lenh Playwright cua project la nguon su that ve hanh vi trang.",
+    "commands": []
+  },
+  "failures": [],
+  "verdict": "PASS"
+}

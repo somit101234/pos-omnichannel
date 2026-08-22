@@ -88,66 +88,64 @@ enum AuditEntityType {
 // ── MODELS ─────────────────────────────────────────────────────────────────
 
 model User {
-  id             String   @id @default(cuid())
-  username       String   @unique
+  id             String         @id @default(cuid())
+  username       String         @unique
   passwordHash   String
   email          String?
   phone          String?
-  role           Role     @default(CASHIER)
-  isActive       Boolean  @default(true)
-  loginAttempts  Int      @default(0)
+  role           Role           @default(CASHIER)
+  isActive       Boolean        @default(true)
+  loginAttempts  Int            @default(0)
   lockedUntil    DateTime?
   storeId        String
-  store          Store    @relation(fields: [storeId], references: [id])
+  store          Store          @relation("StoreUsers", fields: [storeId], references: [id])
   transactions   Transaction[]
-  cashShifts     Shift[]  @relation("CashierShift")
+  cashierShifts  Shift[]        @relation("CashierShift")
   auditLogs      AuditLog[]
-  created_AT     DateTime @default(now())
-  updated_AT     DateTime @updatedAt
+  ownedStores    Store[]        @relation("StoreOwner")
+  created_AT     DateTime       @default(now())
+  updated_AT     DateTime       @updatedAt
 
   @@index([storeId])
 }
 
 model Store {
-  id          String    @id @default(cuid())
+  id          String     @id @default(cuid())
   name        String
   address     String?
   phone       String?
   taxCode     String?
   settings    Json?
   ownerId     String
-  owner       User      @relation(fields: [ownerId], references: [id])
+  owner       User       @relation("StoreOwner", fields: [ownerId], references: [id])
   products    Product[]
   categories  Category[]
-  stocks      Stock[]
   transactions Transaction[]
-  shifts      Shift[]   @relation("StoreShift")
+  shifts      Shift[]    @relation("StoreShift")
   onlineOrders OnlineOrder[]
   purchaseOrders PurchaseOrder[]
   auditLogs   AuditLog[]
-  users       User[]
+  storeUsers  User[]     @relation("StoreUsers")
   warehouses  Warehouse[]
-  created_AT  DateTime  @default(now())
-  updated_AT  DateTime  @updatedAt
-
-  @@index([storeId]) // kept for plan compat; storeId = id
+  created_AT  DateTime   @default(now())
+  updated_AT  DateTime   @updatedAt
 }
 
 model Warehouse {
-  id        String   @id @default(cuid())
+  id        String    @id @default(cuid())
   storeId   String
-  store     Store    @relation(fields: [storeId], references: [id])
+  store     Store     @relation("WarehouseStore", fields: [storeId], references: [id])
   name      String
   address   String?
-  products  Stock[]
-  created_AT DateTime @default(now())
-  updated_AT DateTime @updatedAt
+  stocks    Stock[]
+  created_AT DateTime  @default(now())
+  updated_AT DateTime  @updatedAt
 }
 
 model Category {
   id          String    @id @default(cuid())
   storeId     String
-  store       Store     @relation(fields: [storeId], references: [id])
+  store       Store     @relation("CategoryStore", fields: [storeId], references: [id])
   name        String
   parentId    String?
   parent      Category? @relation("CategoryHierarchy", fields: [parentId], references: [id])
@@ -162,11 +160,11 @@ model Category {
 model Product {
   id            String        @id @default(cuid())
   storeId       String
-  store         Store         @relation(fields: [storeId], references: [id])
+  store         Store         @relation("ProductStore", fields: [storeId], references: [id])
   name          String
   barcode       String?       @unique
   categoryId    String
-  category      Category      @relation(fields: [categoryId], references: [id])
+  category      Category      @relation("ProductCategory", fields: [categoryId], references: [id])
   unit          String        @default("item")
   costPrice     BigInt        @default(0)    // cents
   salePrice     BigInt        @default(0)    // cents
@@ -176,9 +174,10 @@ model Product {
   bomParentId   String?
   bomParent     Product?      @relation("BomParent", fields: [bomParentId], references: [id])
   bomChildren   Product[]     @relation("BomParent")
-  bomItems      BomItem[]
-  stock         Stock[]
-  transactions  TransactionItem[]
+  bomIngredients BomItem[]    @relation("BomProductIngredients")
+  ingredientOf  BomItem[]     @relation("BomIngredients")
+  stocks        Stock[]
+  transactionItems TransactionItem[]
   created_AT    DateTime      @default(now())
   updated_AT    DateTime      @updatedAt
 
@@ -188,9 +187,9 @@ model Product {
 model BomItem {
   id                  String  @id @default(cuid())
   bomProductId        String
-  bomProduct          Product @relation(fields: [bomProductId], references: [id])
+  bomProduct          Product @relation("BomProductIngredients", fields: [bomProductId], references: [id])
   ingredientProductId String
-  ingredientProduct   Product @relation(fields: [ingredientProductId], references: [id])
+  ingredientProduct   Product @relation("BomIngredients", fields: [ingredientProductId], references: [id])
   quantity            Int
   bomLevel            Int     @default(1)
 
@@ -200,9 +199,9 @@ model BomItem {
 model Stock {
   id          String   @id @default(cuid())
   productId   String
-  product     Product  @relation(fields: [productId], references: [id])
+  product     Product  @relation("StockProduct", fields: [productId], references: [id])
   warehouseId String
-  warehouse   Warehouse @relation(fields: [warehouseId], references: [id])
+  warehouse   Warehouse @relation("StockWarehouse", fields: [warehouseId], references: [id])
   quantity    Int
   lastUpdated DateTime @updatedAt
 
@@ -212,28 +211,28 @@ model Stock {
 model Transaction {
   id              String            @id @default(cuid())
   storeId         String
-  store           Store             @relation(fields: [storeId], references: [id])
+  store           Store             @relation("TransactionStore", fields: [storeId], references: [id])
   cashierId       String
-  cashier         User              @relation(fields: [cashierId], references: [id])
+  cashier         User              @relation("TransactionCashier", fields: [cashierId], references: [id])
   type            TransactionType   @default(SALE)
   status          TransactionStatus @default(PENDING)
   total           BigInt            @default(0)   // cents
   paymentMethod   PaymentMethod
-  items           TransactionItem[]
+  transactionItems TransactionItem[]
   createdAt       DateTime          @default(now())
 
   @@index([storeId, createdAt])
 }
 
 model TransactionItem {
-  id          String    @id @default(cuid())
-  transactionId String
-  transaction Transaction @relation(fields: [transactionId], references: [id])
-  productId   String
-  product     Product   @relation(fields: [productId], references: [id])
-  quantity    Int
-  price       BigInt    // cents per unit
-  total       BigInt    // cents
+  id             String  @id @default(cuid())
+  transactionId  String
+  transaction    Transaction @relation("TransactionItems", fields: [transactionId], references: [id])
+  productId      String
+  product        Product @relation("TransactionItemProduct", fields: [productId], references: [id])
+  quantity       Int
+  price          BigInt  // cents per unit
+  total          BigInt  // cents
 
   @@index([transactionId])
 }
@@ -249,9 +248,9 @@ model Supplier {
 model PurchaseOrder {
   id             String          @id @default(cuid())
   supplierId     String
-  supplier       Supplier        @relation(fields: [supplierId], references: [id])
+  supplier       Supplier        @relation("POSupplier", fields: [supplierId], references: [id])
   storeId        String
-  store          Store           @relation(fields: [storeId], references: [id])
+  store          Store           @relation("POStore", fields: [storeId], references: [id])
   status         PurchaseOrderStatus @default(DRAFT)
   items          Json?
   total          BigInt?
@@ -263,9 +262,9 @@ model PurchaseOrder {
 model Shift {
   id             String          @id @default(cuid())
   storeId        String
-  store          Store           @relation(fields: [storeId], references: [id])
+  store          Store           @relation("StoreShift", fields: [storeId], references: [id])
   cashierId      String
-  cashier        User            @relation(fields: [cashierId], references: [id])
+  cashier        User            @relation("CashierShift", fields: [cashierId], references: [id])
   startTime      DateTime
   endTime        DateTime?
   status         ShiftStatus     @default(OPEN)
@@ -277,7 +276,7 @@ model Shift {
 model OnlineOrder {
   id             String           @id @default(cuid())
   storeId        String
-  store          Store            @relation(fields: [storeId], references: [id])
+  store          Store            @relation("OOStore", fields: [storeId], references: [id])
   platform       Platform
   orderNo        String           @unique
   status         OnlineOrderStatus @default(PENDING)
@@ -291,7 +290,7 @@ model OnlineOrder {
 model AuditLog {
   id             String          @id @default(cuid())
   storeId        String
-  store          Store           @relation(fields: [storeId], references: [id])
+  store          Store           @relation("ALStore", fields: [storeId], references: [id])
   userId         String
   action         AuditAction
   entityType     AuditEntityType
