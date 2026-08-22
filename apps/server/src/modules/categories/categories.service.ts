@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
+import type { Category } from '@prisma/client';
 
 export interface CreateCategoryDto {
   storeId: string;
@@ -43,7 +44,7 @@ export class CategoriesService {
 
   async findAll(storeId: string) {
     // Get all categories for this store
-    const categories: import('@prisma/client').Category[] = await this.prisma.category.findMany({
+    const categories: Category[] = await this.prisma.category.findMany({
       where: { storeId },
       orderBy: [
         { storeId: 'asc' },

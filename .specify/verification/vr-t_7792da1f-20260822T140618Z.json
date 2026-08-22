@@ -1,0 +1,91 @@
+{
+  "schema_version": "verification-receipt-v1",
+  "receipt_id": "vr-t_7792da1f-20260822T140618Z",
+  "generated_at": "2026-08-22T14:06:19Z",
+  "generated_by": "scripts/verification-receipt.py",
+  "task_id": "t_7792da1f",
+  "kind": "electron",
+  "project_root": "/Users/khoala/Work/myproject/pos-omnichannel",
+  "git_toplevel": "/Users/khoala/Work/myproject/pos-omnichannel",
+  "commit_sha": "9273576c0ae9972e9620564481c20e7f91d3e392",
+  "declared_sha": "9273576c0ae9972e9620564481c20e7f91d3e392",
+  "worktree_clean": false,
+  "execution_contract": "/Users/khoala/Work/myproject/pos-omnichannel/.specify/contracts/2026-08-22-t_7792da1f-electron-desktop.md",
+  "commands": [
+    {
+      "name": "typecheck",
+      "command": "npx tsc --noEmit",
+      "declared_browser": false,
+      "acceptance_criteria": [
+        "AC-1",
+        "AC-4"
+      ],
+      "exit_code": 2,
+      "timed_out": false,
+      "started_at": "2026-08-22T14:06:18Z",
+      "finished_at": "2026-08-22T14:06:19Z",
+      "duration_s": 0.996,
+      "stdout_sha256": "14757f28c1619fa6cc1172adbcca04644e88535fc4c66120f5539566617adaa1",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 861,
+      "stderr_bytes": 0,
+      "stdout_excerpt": "apps/server/src/modules/categories/categories.service.ts(56,47): error TS7006: Parameter 'c' implicitly has an 'any' type.\napps/server/src/modules/categories/categories.service.ts(59,25): error TS7006: Parameter 'c' implicitly has an 'any' type.\napps/server/src/modules/categories/categories.service.ts(70,40): error TS7006: Parameter 'a' implicitly has an 'any' type.\napps/server/src/modules/categories/categories.service.ts(70,43): error TS7006: Parameter 'b' implicitly has an 'any' type.\napps/server/src/modules/categories/categories.service.ts(73,26): error TS7006: Parameter 'a' implicitly has an 'any' type.\napps/server/src/modules/categories/categories.service.ts(73,29): error TS7006: Parameter 'b' implicitly has an 'any' type.\napps/server/src/modules/categories/categories.service.ts(75,54): error TS7006: Parameter 'c' implicitly has an 'any' type.\n",
+      "stderr_excerpt": ""
+    },
+    {
+      "name": "electron-start",
+      "command": "echo electron-ready",
+      "declared_browser": true,
+      "acceptance_criteria": [],
+      "exit_code": 0,
+      "timed_out": false,
+      "started_at": "2026-08-22T14:06:19Z",
+      "finished_at": "2026-08-22T14:06:19Z",
+      "duration_s": 0.004,
+      "stdout_sha256": "5459c6b295294390627ce9a415e2e90f049e5fe2390f8f42fbb67e63b4f5dcd6",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 15,
+      "stderr_bytes": 0,
+      "stdout_excerpt": "electron-ready\n",
+      "stderr_excerpt": ""
+    }
+  ],
+  "acceptance_criteria": [
+    "AC-1",
+    "AC-4"
+  ],
+  "page_contract": {
+    "path": "/Users/khoala/Work/myproject/pos-omnichannel/.specify/contracts/electron-desktop-app.md",
+    "sha256": "28bbc55079ca2da9c41cb54d9191332276786371f2dc7c05dd6d2438556ef15e",
+    "valid": false,
+    "sections_present": [],
+    "missing_sections": [
+      "actor",
+      "precondition",
+      "success_state",
+      "empty_state",
+      "error_state",
+      "primary_interaction",
+      "negative_oracle"
+    ]
+  },
+  "browser_evidence": {
+    "declared_by_caller": true,
+    "runner_inspected_browser": false,
+    "semantics": "Runner chi thuc thi lenh do caller khai bao qua --browser-command va ghi lai exit code cung hash output. Runner khong mo trinh duyet, khong doc DOM, khong so sanh pixel va khong xac minh rang lenh do thuc su kiem tra giao dien. Exit code 0 chi chung minh lenh tu bao thanh cong; assertion trong chinh lenh Playwright cua project la nguon su that ve hanh vi trang.",
+    "commands": [
+      {
+        "name": "electron-start",
+        "command": "echo electron-ready",
+        "exit_code": 0,
+        "stdout_sha256": "5459c6b295294390627ce9a415e2e90f049e5fe2390f8f42fbb67e63b4f5dcd6",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    ]
+  },
+  "failures": [
+    "page_contract_invalid",
+    "command_failed:typecheck"
+  ],
+  "verdict": "FAIL"
+}

@@ -1,0 +1,63 @@
+{
+  "schema_version": "verification-receipt-v1",
+  "receipt_id": "vr-t_aae7841e-20260822T140428Z",
+  "generated_at": "2026-08-22T14:04:29Z",
+  "generated_by": "scripts/verification-receipt.py",
+  "task_id": "t_aae7841e",
+  "kind": "other",
+  "project_root": "/Users/khoala/Work/myproject/pos-omnichannel",
+  "git_toplevel": "/Users/khoala/Work/myproject/pos-omnichannel",
+  "commit_sha": "b1089caf666b7c4d298d7a7f4bda22efe0279421",
+  "declared_sha": "8045fbb2b1c8ad8669c96cf32f047d918ca2cc13",
+  "worktree_clean": false,
+  "execution_contract": null,
+  "commands": [
+    {
+      "name": "AC1",
+      "command": "npx vitest run auth.service.test.ts PASS",
+      "declared_browser": false,
+      "acceptance_criteria": [],
+      "exit_code": 0,
+      "timed_out": false,
+      "started_at": "2026-08-22T14:04:28Z",
+      "finished_at": "2026-08-22T14:04:29Z",
+      "duration_s": 0.669,
+      "stdout_sha256": "04e1f67e6b359893f91e5fde6ef0e92d828096d529ebfe73f71ec5d3b6036151",
+      "stderr_sha256": "6a013b71d94eadb16a930c32d667b41cd78de87ee97381f3cb81ed13fbe986e3",
+      "stdout_bytes": 312,
+      "stderr_bytes": 153,
+      "stdout_excerpt": "\n RUN  v1.6.1 /Users/khoala/Work/myproject/pos-omnichannel\n\n ✓ apps/server/src/modules/auth/auth.service.test.ts  (20 tests) 5ms\n\n Test Files  1 passed (1)\n      Tests  20 passed (20)\n   Start at  21:04:29\n   Duration  216ms (transform 35ms, setup 0ms, collect 60ms, tests 5ms, environment 0ms, prepare 63ms)\n\n",
+      "stderr_excerpt": "\u001b[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.\u001b[39m\n"
+    },
+    {
+      "name": "AC2",
+      "command": "tsc --noEmit exit 0",
+      "declared_browser": false,
+      "acceptance_criteria": [],
+      "exit_code": 1,
+      "timed_out": false,
+      "started_at": "2026-08-22T14:04:29Z",
+      "finished_at": "2026-08-22T14:04:29Z",
+      "duration_s": 0.065,
+      "stdout_sha256": "5b766b55df5bc15c215149742c8fe88d72a584cb45f5422c7edca1594b6d0cb5",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 142,
+      "stderr_bytes": 0,
+      "stdout_excerpt": "error TS5112: tsconfig.json is present but will not be loaded if files are specified on commandline. Use '--ignoreConfig' to skip this error.\n",
+      "stderr_excerpt": ""
+    }
+  ],
+  "acceptance_criteria": [],
+  "page_contract": null,
+  "browser_evidence": {
+    "declared_by_caller": false,
+    "runner_inspected_browser": false,
+    "semantics": "Runner chi thuc thi lenh do caller khai bao qua --browser-command va ghi lai exit code cung hash output. Runner khong mo trinh duyet, khong doc DOM, khong so sanh pixel va khong xac minh rang lenh do thuc su kiem tra giao dien. Exit code 0 chi chung minh lenh tu bao thanh cong; assertion trong chinh lenh Playwright cua project la nguon su that ve hanh vi trang.",
+    "commands": []
+  },
+  "failures": [
+    "sha_mismatch",
+    "command_failed:AC2"
+  ],
+  "verdict": "FAIL"
+}
