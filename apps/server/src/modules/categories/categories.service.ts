@@ -43,7 +43,7 @@ export class CategoriesService {
 
   async findAll(storeId: string) {
     // Get all categories for this store
-    const categories = await this.prisma.category.findMany({
+    const categories: import('@prisma/client').Category[] = await this.prisma.category.findMany({
       where: { storeId },
       orderBy: [
         { storeId: 'asc' },
