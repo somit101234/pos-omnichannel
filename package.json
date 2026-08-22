@@ -1,0 +1,30 @@
+{
+  "name": "pos-omnichannel",
+  "version": "0.0.1",
+  "private": true,
+  "description": "POS Omnichannel MVP — multi-store, offline-capable, BOM-recursive",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "nest build server",
+    "seed": "ts-node --transpile-only prisma/seed.ts",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint \"apps/**/src/**/*.ts\" --max-warnings 0",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "@nestjs/cli": "^10.4.5",
+    "@types/node": "^20.14.15",
+    "eslint": "^8.57.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.5.4",
+    "vitest": "^1.6.0"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "name": "@pos-omnichannel/shared",
+  "version": "0.0.1",
+  "private": true,
+  "main": "types.ts",
+  "types": "types.ts",
+  "scripts": {},
+  "devDependencies": {
+    "typescript": "^5.5.4"
+  }
+}

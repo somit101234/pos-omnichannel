@@ -1,0 +1,21 @@
+{
+  "name": "@pos/mobile",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "dev": "echo 'React Native Expo dev server'",
+    "build": "echo 'React Native build'",
+    "lint": "echo 'No linter config yet'",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "expo": "^50.0.0",
+    "react-native": "0.73.4",
+    "@nozbe/watermelondb": "^0.24.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3",
+    "vitest": "^1.2.0"
+  }
+}
