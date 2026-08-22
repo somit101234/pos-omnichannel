@@ -219,8 +219,9 @@ describe('AuthService', () => {
 
       expect(result.accessToken).toBeDefined();
       // When requiredRoles is undefined/falsy, canActivate returns true (public)
-      const requiredRoles: string[] | undefined = undefined;
-      const allowed = !requiredRoles || requiredRoles.some((role: string) => 'CASHIER' === role);
+      const requiredRoles: string[] | undefined = [];
+      // TS fix: use type assertion to ensure requiredRoles is string[]
+      const allowed = (requiredRoles as string[]).length === 0 || (requiredRoles as string[]).some((role: string) => 'CASHIER' === role);
       expect(allowed).toBe(true);
     });
 

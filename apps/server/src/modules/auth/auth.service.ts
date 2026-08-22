@@ -19,7 +19,7 @@ interface UserRecord {
 const mockUsers: Record<string, UserRecord> = {};
 
 export class AuthService {
-  async login(username: string, password: string) {
+  async login(username: string, password: string): Promise<{ accessToken: string; refreshToken: string; user: { id: string; username: string; role: string } }> {
     const user = mockUsers[username];
 
     if (!user) {
