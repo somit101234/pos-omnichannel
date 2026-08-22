@@ -10,6 +10,7 @@ const Sidebar: React.FC<SidebarProps> = ({ userRole }) => {
   // Define menu items based on role
   const getMenuItems = (): Array<{ label: string; path: string; roles: UserRole[] }> => {
     const baseItems: Array<{ label: string; path: string; roles: UserRole[] }> = [
+      { label: 'POS — Bán hàng', path: '/pos', roles: [UserRole.OWNER, UserRole.MANAGER, UserRole.CASHIER] },
       { label: 'Tổng quan', path: '/dashboard', roles: [UserRole.OWNER, UserRole.MANAGER, UserRole.CASHIER] },
     ];
 
