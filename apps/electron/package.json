@@ -2,9 +2,10 @@
   "name": "@pos/electron",
   "version": "0.0.1",
   "private": true,
+  "main": "main.js",
   "scripts": {
-    "dev": "echo 'Electron dev server'",
-    "build": "echo 'Electron build'",
+    "dev": "electron .",
+    "build": "echo 'Electron build - no compilation needed for JS'",
     "lint": "echo 'No linter config yet'",
     "typecheck": "tsc --noEmit",
     "test": "vitest run"

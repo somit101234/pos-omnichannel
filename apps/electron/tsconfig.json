@@ -7,7 +7,12 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "allowJs": true,
+    "checkJs": true,
+    "noEmit": true,
+    "types": ["node"]
   },
+  "include": ["**/*.js", "**/*.json"],
   "exclude": ["node_modules", "dist"]
 }
