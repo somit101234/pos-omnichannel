@@ -18,7 +18,8 @@
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
     "resolveJsonModule": true,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "types": ["react", "react-dom", "node"]
   },
   "include": ["apps/**/*", "packages/**/*"],
   "exclude": ["node_modules", "dist"]
