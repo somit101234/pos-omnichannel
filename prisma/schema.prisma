@@ -176,6 +176,7 @@ model Product {
   bomChildren   Product[]     @relation("BomParent")
   bomIngredients BomItem[]    @relation("BomProductIngredients")
   ingredientOf  BomItem[]     @relation("BomIngredients")
+  unitConversions UnitConversion[] @relation("ProductUnitConversions")
   stocks        Stock[]
   transactionItems TransactionItem[]
   created_AT    DateTime      @default(now())
@@ -298,4 +299,22 @@ model AuditLog {
   createdAt      DateTime        @default(now())
 
   @@index([storeId, entityType, entityId])
+}
+
+// ── UNIT CONVERSION ──────────────────────────────────────────────────────────
+// Ví dụ: 1 nồi = 20 hộp, ratio = 20; 1 kg = 1000 g, ratio = 1000
+
+model UnitConversion {
+  id            String   @id @default(cuid())
+  productId     String
+  product       Product  @relation("ProductUnitConversions", fields: [productId], references: [id])
+  fromUnit      String   // đơn vị gốc (kg, cái, nồi...)
+  toUnit        String   // đơn vị mục tiêu (g, hộp, hộp...)
+  ratio         Int      // tỷ lệ: từ từ_unit sang to_unit (ví dụ: 1 nồi = 20 hộp → ratio = 20)
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([productId, fromUnit, toUnit])
+  @@unique([productId, fromUnit, toUnit])
 }
