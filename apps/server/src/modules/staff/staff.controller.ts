@@ -1,4 +1,3 @@
-// @ts-nocheck: NestJS decorator issue with TypeScript strict mode
 import {
   Controller,
   Get,

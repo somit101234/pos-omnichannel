@@ -99,9 +99,9 @@ model User {
   lockedUntil    DateTime?
   storeId        String
   store          Store          @relation("StoreUsers", fields: [storeId], references: [id])
-  transactions   Transaction[]        @relation("UserTransactions")
+  transactions   Transaction[]
   cashierShifts  Shift[]        @relation("CashierShift")
-  auditLogs      AuditLog[]        @relation("UserAuditLogs")
+  auditLogs      AuditLog[]
   ownedStores    Store[]        @relation("StoreOwner")
   created_AT     DateTime       @default(now())
   updated_AT     DateTime       @updatedAt
@@ -118,9 +118,9 @@ model Store {
   settings    Json?
   ownerId     String
   owner       User       @relation("StoreOwner", fields: [ownerId], references: [id])
-  products    Product[]        @relation("StoreProducts")
-  categories  Category[]        @relation("StoreCategories")
-  transactions Transaction[]        @relation("StoreTransactions")
+  products    Product[]
+  categories  Category[]
+  transactions Transaction[]
   shifts      Shift[]    @relation("StoreShift")
   onlineOrders OnlineOrder[]
   purchaseOrders PurchaseOrder[]

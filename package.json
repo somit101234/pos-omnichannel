@@ -2,7 +2,7 @@
   "name": "pos-omnichannel",
   "version": "0.0.1",
   "private": true,
-  "description": "POS Omnichannel MVP \u2014 multi-store, offline-capable, BOM-recursive",
+  "description": "POS Omnichannel MVP — multi-store, offline-capable, BOM-recursive",
   "workspaces": [
     "apps/*",
     "packages/*"
@@ -28,9 +28,5 @@
   },
   "engines": {
     "node": ">=20.0.0"
-  },
-  "overrides": {
-    "react": "18.3.1",
-    "react-dom": "18.3.1"
   }
 }
