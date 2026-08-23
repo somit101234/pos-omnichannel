@@ -1,0 +1,60 @@
+{
+  "schema_version": "verification-receipt-v1",
+  "receipt_id": "vr-t_47da313b-20260823T033741Z",
+  "generated_at": "2026-08-23T03:37:42Z",
+  "generated_by": "scripts/verification-receipt.py",
+  "task_id": "t_47da313b",
+  "kind": "other",
+  "project_root": "/Users/khoala/Work/myproject/pos-omnichannel",
+  "git_toplevel": "/Users/khoala/Work/myproject/pos-omnichannel",
+  "commit_sha": "dfd1fe856d29938761a609cb04807b9048f56809",
+  "declared_sha": "dfd1fe856d29938761a609cb04807b9048f56809",
+  "worktree_clean": true,
+  "execution_contract": null,
+  "commands": [
+    {
+      "name": "typecheck",
+      "command": "npx tsc --noEmit",
+      "declared_browser": false,
+      "acceptance_criteria": [],
+      "exit_code": 0,
+      "timed_out": false,
+      "started_at": "2026-08-23T03:37:41Z",
+      "finished_at": "2026-08-23T03:37:41Z",
+      "duration_s": 0.795,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 0,
+      "stderr_bytes": 0,
+      "stdout_excerpt": "",
+      "stderr_excerpt": ""
+    },
+    {
+      "name": "test",
+      "command": "npx vitest run apps/server/src/modules/inventory/inventory.service.test.ts",
+      "declared_browser": false,
+      "acceptance_criteria": [],
+      "exit_code": 0,
+      "timed_out": false,
+      "started_at": "2026-08-23T03:37:41Z",
+      "finished_at": "2026-08-23T03:37:42Z",
+      "duration_s": 0.69,
+      "stdout_sha256": "0b36a5e2b0fe839b643dc2846ad00a56d3df90a545f92ead7bada538466640d7",
+      "stderr_sha256": "6a013b71d94eadb16a930c32d667b41cd78de87ee97381f3cb81ed13fbe986e3",
+      "stdout_bytes": 323,
+      "stderr_bytes": 153,
+      "stdout_excerpt": "\n RUN  v1.6.1 /Users/khoala/Work/myproject/pos-omnichannel\n\n ✓ apps/server/src/modules/inventory/inventory.service.test.ts  (20 tests) 3ms\n\n Test Files  1 passed (1)\n      Tests  20 passed (20)\n   Start at  10:37:42\n   Duration  276ms (transform 29ms, setup 0ms, collect 145ms, tests 3ms, environment 0ms, prepare 52ms)\n\n",
+      "stderr_excerpt": "\u001b[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.\u001b[39m\n"
+    }
+  ],
+  "acceptance_criteria": [],
+  "page_contract": null,
+  "browser_evidence": {
+    "declared_by_caller": false,
+    "runner_inspected_browser": false,
+    "semantics": "Runner chi thuc thi lenh do caller khai bao qua --browser-command va ghi lai exit code cung hash output. Runner khong mo trinh duyet, khong doc DOM, khong so sanh pixel va khong xac minh rang lenh do thuc su kiem tra giao dien. Exit code 0 chi chung minh lenh tu bao thanh cong; assertion trong chinh lenh Playwright cua project la nguon su that ve hanh vi trang.",
+    "commands": []
+  },
+  "failures": [],
+  "verdict": "PASS"
+}
