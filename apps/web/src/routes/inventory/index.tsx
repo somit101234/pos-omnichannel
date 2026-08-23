@@ -6,6 +6,8 @@ import React from 'react';
  * FR-028: Owner thực hiện inventory check — nhập actual qty cho từng sản phẩm
  * FR-029: Hệ thống tính variance = theoretical - actual
  * FR-030: Tính hao hụt cost = |variance| × unit_cost cho sản phẩm thiếu (deficit)
+ * FR-031: System tự động tính theoretical stock hàng đêm, gửi cảnh báo tồn thấp
+ * FR-032: Manager xem báo cáo kiểm kho theo ngày/tuần/tháng
  */
 
 interface ProductStock {
@@ -16,6 +18,7 @@ interface ProductStock {
   theoreticalQty: number;
   actualQty: number;
   unitCost: number; // cents (integer)
+  minStock: number;
 }
 
 interface VarianceRow {
@@ -29,11 +32,11 @@ interface VarianceRow {
 }
 
 const MOCK_STOCK: ProductStock[] = [
-  { productId: 'p1', name: 'Cháo ếch', barcode: '1234567890001', unit: 'chén', theoreticalQty: 20, actualQty: 0, unitCost: 8000 },
-  { productId: 'p2', name: 'Cơm sườn', barcode: '1234567890002', unit: 'suất', theoreticalQty: 15, actualQty: 0, unitCost: 10000 },
-  { productId: 'p3', name: 'Bánh mì', barcode: '1234567890003', unit: 'cái', theoreticalQty: 30, actualQty: 0, unitCost: 3000 },
-  { productId: 'p4', name: 'Nước ép', barcode: '1234567890004', unit: 'ly', theoreticalQty: 25, actualQty: 0, unitCost: 5000 },
-  { productId: 'p5', name: 'Phở bò', barcode: '1234567890005', unit: 'bát', theoreticalQty: 10, actualQty: 0, unitCost: 12000 },
+  { productId: 'p1', name: 'Cháo ếch', barcode: '1234567890001', unit: 'chén', theoreticalQty: 20, actualQty: 0, unitCost: 8000, minStock: 5 },
+  { productId: 'p2', name: 'Cơm sườn', barcode: '1234567890002', unit: 'suất', theoreticalQty: 15, actualQty: 0, unitCost: 10000, minStock: 3 },
+  { productId: 'p3', name: 'Bánh mì', barcode: '1234567890003', unit: 'cái', theoreticalQty: 30, actualQty: 0, unitCost: 3000, minStock: 10 },
+  { productId: 'p4', name: 'Nước ép', barcode: '1234567890004', unit: 'ly', theoreticalQty: 25, actualQty: 0, unitCost: 5000, minStock: 8 },
+  { productId: 'p5', name: 'Phở bò', barcode: '1234567890005', unit: 'bát', theoreticalQty: 10, actualQty: 0, unitCost: 12000, minStock: 4 },
 ];
 
 const InventoryCheck: React.FC = () => {
@@ -42,6 +45,10 @@ const InventoryCheck: React.FC = () => {
 
   const formatCurrency = (amount: number): string => {
     return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
+  };
+
+  const getStockStatus = (theoreticalQty: number, minStock: number): 'low' | 'normal' => {
+    return theoreticalQty < minStock ? 'low' : 'normal';
   };
 
   const handleActualQtyChange = (productId: string, value: number) => {
@@ -83,7 +90,45 @@ const InventoryCheck: React.FC = () => {
           <p style={styles.subtitle}>So sánh tồn lý thuyết vs tồn thực tế</p>
         </header>
 
-        {/* Input table */}
+        {/* Stock list table */}
+        <div style={styles.section}>
+          <h2 style={styles.sectionTitle}>Danh sách tồn kho</h2>
+          <table style={styles.table}>
+            <thead>
+              <tr>
+                <th style={styles.th}>STT</th>
+                <th style={styles.th}>Sản phẩm</th>
+                <th style={styles.th}>Đơn vị</th>
+                <th style={styles.th}>Tồn lý thuyết</th>
+                <th style={styles.th}>Min stock</th>
+                <th style={styles.th}>Trạng thái</th>
+              </tr>
+            </thead>
+            <tbody>
+              {stocks.map((s, i) => {
+                const stockStatus = getStockStatus(s.theoreticalQty, s.minStock);
+                return (
+                  <tr key={s.productId} style={i % 2 === 0 ? styles.trEven : styles.trOdd}>
+                    <td style={styles.td}>{i + 1}</td>
+                    <td style={styles.td}>{s.name}</td>
+                    <td style={styles.td}>{s.unit}</td>
+                    <td style={styles.td}>{s.theoreticalQty}</td>
+                    <td style={styles.td}>{s.minStock}</td>
+                    <td style={styles.td}>
+                      <span style={
+                        stockStatus === 'low' ? styles.badgeLow : styles.badgeNormal
+                      }>
+                        {stockStatus === 'low' ? 'THẤP' : 'BÌNH THƯỜNG'}
+                      </span>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Input table for actual qty */}
         <div style={styles.section}>
           <h2 style={styles.sectionTitle}>Nhập tồn thực tế (actual qty)</h2>
           <table style={styles.table}>
@@ -239,6 +284,14 @@ const styles: Record<string, React.CSSProperties> = {
   },
   summaryLabel: { fontSize: '14px', color: '#666', marginBottom: '8px' },
   summaryValue: { fontSize: '24px', fontWeight: '600', color: '#1976d2' },
+  badgeLow: {
+    display: 'inline-block', padding: '2px 8px', borderRadius: '4px',
+    backgroundColor: '#ffebee', color: '#d32f2f', fontSize: '12px', fontWeight: 'bold',
+  },
+  badgeNormal: {
+    display: 'inline-block', padding: '2px 8px', borderRadius: '4px',
+    backgroundColor: '#e8f5e9', color: '#388e3c', fontSize: '12px', fontWeight: 'bold',
+  },
   badgeDeficit: {
     display: 'inline-block', padding: '2px 8px', borderRadius: '4px',
     backgroundColor: '#ffebee', color: '#d32f2f', fontSize: '12px', fontWeight: 'bold',
