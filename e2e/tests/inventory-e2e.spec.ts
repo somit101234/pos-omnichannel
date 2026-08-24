@@ -58,16 +58,16 @@ test('Inventory variance — deficit case (actual < theoretical)', async ({ page
   await expect(page.locator('text=+10')).toBeVisible();
 
   // 9. Verify loss cost — use regex filter to handle VND NBSP formatting
-  await expect(page.locator('td').filter({ hasText: /16\.000₫/ })).toBeVisible();
-  await expect(page.locator('td').filter({ hasText: /30\.000₫/ })).toBeVisible();
-  await expect(page.locator('td').filter({ hasText: /120\.000₫/ })).toBeVisible();
+  await expect(page.locator('td').filter({ hasText: /16\.000[\s\u00a0]₫/ })).toBeVisible();
+  await expect(page.locator('td').filter({ hasText: /30\.000[\s\u00a0]₫/ })).toBeVisible();
+  await expect(page.locator('td').filter({ hasText: /120\.000[\s\u00a0]₫/ })).toBeVisible();
 
   // 10. Verify balanced product shows "—"
   await expect(page.locator('text=—')).toBeVisible();
 
   // 11. Verify total loss
   await expect(page.locator('text=Tổng hao hụt')).toBeVisible();
-  await expect(page.locator('td').filter({ hasText: /166\.000₫/ })).toBeVisible();
+  await expect(page.locator('td').filter({ hasText: /166\.000[\s\u00a0]₫/ })).toBeVisible();
 
   // 12. Verify status badges
   await expect(page.locator('text=THIẾU')).toBeVisible();

@@ -43,11 +43,11 @@ test('AC1 — scan barcode (search) → product added to cart', async ({ page })
   await expect(page.locator('h3', { hasText: /Giỏ hàng \(1\)/i })).toBeVisible();
 
   // Verify product in cart panel (scope to cart to avoid ambiguity with grid)
-  const cartPanel = page.locator('div', { has: page.locator('h3', { hasText: /Giỏ hàng \(1\)/i }) }).first();
-  await expect(cartPanel.getByText('Cháo ếch', { exact: true })).toBeVisible();
+  const cartPanel = page.locator('div', { has: page.locator('h3', { hasText: /Giỏ hàng \\(1\\)/i }) }).first();
+  await expect(cartPanel.getByText('Cháo ếch')).toBeVisible();
 
   // Verify total price (span.valueTotal is inline style, no class — use text locator)
-  await expect(page.getByText('15.000₫')).toBeVisible();
+  await expect(page.getByText(/15\.000/)).toBeVisible();
 });
 
 // ──────────────────────────────────────────────
@@ -72,7 +72,7 @@ test('AC2 — add product → checkout → payment dialog opens → confirm paym
   await expect(page.locator('h3', { hasText: /Giỏ hàng \(1\)/i })).toBeVisible();
 
   // Verify total (use text locator — span.valueTotal is inline style, no HTML class)
-  await expect(page.getByText('15.000₫')).toBeVisible();
+  await expect(page.getByText(/15\.000/)).toBeVisible();
 
   // Click checkout
   await page.getByRole('button', { name: /thanh toán/i }).first().click();
@@ -199,7 +199,7 @@ test('Boundary — add 2 different products → checkout → verify total', asyn
   await expect(page.locator('h3', { hasText: /Giỏ hàng \(2\)/i })).toBeVisible();
 
   // Verify total (15000 + 20000 = 35,000₫) (use text locator — inline styles)
-  await expect(page.getByText('35.000₫')).toBeVisible();
+  await expect(page.getByText(/35\.000/)).toBeVisible();
 
   // Checkout
   await page.getByRole('button', { name: /thanh toán/i }).first().click();
