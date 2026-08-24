@@ -1,7 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { ShiftService } from './shift.service';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
-import type { Shift } from '@prisma/client';
 
 // Mock PrismaService với correct structure
 const mockPrisma = {
@@ -75,8 +74,16 @@ describe('ShiftService', () => {
 
   // ===== AC2: End shift -> status COMPLETED, duration calculated =====
   describe('AC2 — End shift', () => {
+    beforeEach(() => {
+      vi.useFakeTimers();
+      vi.setSystemTime(new Date('2026-08-23T14:30:00Z'));
+    });
+
+    afterEach(() => {
+      vi.useRealTimers();
+    });
+
     it('should end ACTIVE shift and calculate duration', async () => {
-      const now = new Date('2026-08-23T14:30:00Z');
       const startedAt = new Date('2026-08-23T10:00:00Z');
       const mockShift = {
         id: 'shift_1',
@@ -87,7 +94,7 @@ describe('ShiftService', () => {
         endedAt: null,
         forceClosedAt: null,
       };
-      const updatedShift = { ...mockShift, status: 'COMPLETED', endedAt: now };
+      const updatedShift = { ...mockShift, status: 'COMPLETED', endedAt: new Date('2026-08-23T14:30:00Z') };
 
       mockPrisma.shift.findFirst.mockResolvedValue(mockShift);
       mockPrisma.shift.update.mockResolvedValue(updatedShift);
@@ -96,7 +103,7 @@ describe('ShiftService', () => {
       const shiftResult = result as any;
 
       expect(shiftResult.status).toBe('COMPLETED');
-      expect(shiftResult.endedAt).toEqual(now);
+      expect(shiftResult.endedAt).toEqual(new Date('2026-08-23T14:30:00Z'));
       // Duration should be ~4.5 hours (16200 seconds)
       expect(shiftResult.duration).toBeCloseTo(16200, -1); // allow ±10 seconds
       expect(mockPrisma.shift.update).toHaveBeenCalledWith({

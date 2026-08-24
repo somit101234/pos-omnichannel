@@ -1,6 +1,7 @@
 // @ts-nocheck
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import type { Shift, User } from '@prisma/client';
 
 export interface StartShiftDto {
