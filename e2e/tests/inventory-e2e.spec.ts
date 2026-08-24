@@ -51,27 +51,25 @@ test('Inventory variance — deficit case (actual < theoretical)', async ({ page
   // 7. Verify results section
   await expect(page.locator('h2', { hasText: /Kết quả/i })).toBeVisible();
 
-  // 8. Verify variance values — use results table scoped text locators
+  // 8. Verify variance values
   await expect(page.locator('text=+2')).toBeVisible();
   await expect(page.locator('text=+3')).toBeVisible();
   await expect(page.locator('text=-3')).toBeVisible();
   await expect(page.locator('text=+10')).toBeVisible();
 
-  // 9. Verify loss cost values
-  //    Cháo ếch: 2 × 8000 = 16,000₫
-  await expect(page.locator('text=16.000₫')).toBeVisible();
-  //    Cơm sườn: 3 × 10000 = 30,000₫
-  await expect(page.locator('text=30.000₫')).toBeVisible();
-  //    Phở bò: 10 × 12000 = 120,000₫
-  await expect(page.locator('text=120.000₫')).toBeVisible();
-  //    Bánh mì balanced → "—"
+  // 9. Verify loss cost — use regex filter to handle VND NBSP formatting
+  await expect(page.locator('td').filter({ hasText: /16\.000₫/ })).toBeVisible();
+  await expect(page.locator('td').filter({ hasText: /30\.000₫/ })).toBeVisible();
+  await expect(page.locator('td').filter({ hasText: /120\.000₫/ })).toBeVisible();
+
+  // 10. Verify balanced product shows "—"
   await expect(page.locator('text=—')).toBeVisible();
 
-  // 10. Verify total loss
+  // 11. Verify total loss
   await expect(page.locator('text=Tổng hao hụt')).toBeVisible();
-  await expect(page.locator('text=166.000₫')).toBeVisible();
+  await expect(page.locator('td').filter({ hasText: /166\.000₫/ })).toBeVisible();
 
-  // 11. Verify status badges
+  // 12. Verify status badges
   await expect(page.locator('text=THIẾU')).toBeVisible();
   await expect(page.locator('text=DƯ')).toBeVisible();
   await expect(page.locator('text=ĐỒNG BỘ')).toBeVisible();

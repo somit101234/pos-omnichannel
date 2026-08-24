@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "dev": "echo 'React dev server'",
+    "dev": "vite",
     "build": "echo 'React build'",
     "lint": "echo 'No linter config yet'",
     "typecheck": "tsc --noEmit",

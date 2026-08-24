@@ -1,0 +1,88 @@
+{
+  "schema_version": "verification-receipt-v1",
+  "receipt_id": "vr-t_65753fba-20260824T090842Z",
+  "generated_at": "2026-08-24T09:08:45Z",
+  "generated_by": "scripts/verification-receipt.py",
+  "task_id": "t_65753fba",
+  "kind": "web",
+  "project_root": "/Users/khoala/Work/myproject/pos-omnichannel",
+  "git_toplevel": "/Users/khoala/Work/myproject/pos-omnichannel",
+  "commit_sha": "ba51dadad98b311cfa5aff65ed4dbc65ee6e7dc2",
+  "declared_sha": "ba51dadad98b311cfa5aff65ed4dbc65ee6e7dc2",
+  "worktree_clean": false,
+  "execution_contract": null,
+  "commands": [
+    {
+      "name": "typecheck",
+      "command": "cd apps/web && npx tsc --noEmit",
+      "declared_browser": false,
+      "acceptance_criteria": [
+        "AC-5"
+      ],
+      "exit_code": 0,
+      "timed_out": false,
+      "started_at": "2026-08-24T09:08:42Z",
+      "finished_at": "2026-08-24T09:08:44Z",
+      "duration_s": 1.674,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 0,
+      "stderr_bytes": 0,
+      "stdout_excerpt": "",
+      "stderr_excerpt": ""
+    },
+    {
+      "name": "e2e",
+      "command": "cd apps/web && npx playwright test tests/reports.spec.ts --reporter list",
+      "declared_browser": true,
+      "acceptance_criteria": [],
+      "exit_code": 1,
+      "timed_out": false,
+      "started_at": "2026-08-24T09:08:44Z",
+      "finished_at": "2026-08-24T09:08:45Z",
+      "duration_s": 0.87,
+      "stdout_sha256": "10430d4abdbd108757550247ef54aa526417db51010e4fcac2d0bf16fe54e830",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 166,
+      "stderr_bytes": 0,
+      "stdout_excerpt": "Error: No tests found.\nMake sure that arguments are regular expressions matching test files.\nYou may need to escape symbols like \"$\" or \"*\" and quote the arguments.\n\n",
+      "stderr_excerpt": ""
+    }
+  ],
+  "acceptance_criteria": [
+    "AC-5"
+  ],
+  "page_contract": {
+    "path": "/Users/khoala/Work/myproject/pos-omnichannel/.specify/contracts/page-reports.md",
+    "sha256": "35eb5fac9a94ae64df9d0f46d49123fcef888a44cb9c6f9af4d4b2ddcb7a72c1",
+    "valid": true,
+    "sections_present": [
+      "actor",
+      "precondition",
+      "success_state",
+      "empty_state",
+      "error_state",
+      "primary_interaction",
+      "negative_oracle"
+    ],
+    "missing_sections": []
+  },
+  "browser_evidence": {
+    "declared_by_caller": true,
+    "runner_inspected_browser": false,
+    "semantics": "Runner chi thuc thi lenh do caller khai bao qua --browser-command va ghi lai exit code cung hash output. Runner khong mo trinh duyet, khong doc DOM, khong so sanh pixel va khong xac minh rang lenh do thuc su kiem tra giao dien. Exit code 0 chi chung minh lenh tu bao thanh cong; assertion trong chinh lenh Playwright cua project la nguon su that ve hanh vi trang.",
+    "commands": [
+      {
+        "name": "e2e",
+        "command": "cd apps/web && npx playwright test tests/reports.spec.ts --reporter list",
+        "exit_code": 1,
+        "stdout_sha256": "10430d4abdbd108757550247ef54aa526417db51010e4fcac2d0bf16fe54e830",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    ]
+  },
+  "failures": [
+    "browser_command_failed:e2e"
+  ],
+  "verdict": "FAIL"
+}

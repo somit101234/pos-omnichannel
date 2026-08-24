@@ -1,0 +1,62 @@
+{
+  "schema_version": "verification-receipt-v1",
+  "receipt_id": "vr-t_e9374964-20260823T040941Z",
+  "generated_at": "2026-08-23T04:09:43Z",
+  "generated_by": "scripts/verification-receipt.py",
+  "task_id": "t_e9374964",
+  "kind": "api",
+  "project_root": "/Users/khoala/Work/myproject/pos-omnichannel",
+  "git_toplevel": "/Users/khoala/Work/myproject/pos-omnichannel",
+  "commit_sha": "21e8ed545137f4816175400390ee86dc5eb27916",
+  "declared_sha": "21e8ed545137f4816175400390ee86dc5eb27916",
+  "worktree_clean": false,
+  "execution_contract": null,
+  "commands": [
+    {
+      "name": "test",
+      "command": "npx vitest run apps/server/src/modules/staff/staff.service.test.ts",
+      "declared_browser": false,
+      "acceptance_criteria": [],
+      "exit_code": 0,
+      "timed_out": false,
+      "started_at": "2026-08-23T04:09:41Z",
+      "finished_at": "2026-08-23T04:09:41Z",
+      "duration_s": 0.749,
+      "stdout_sha256": "39a072caef5866acb5d8d3271f0d6cd855639d1cb1e6a2c320502a914e52eac6",
+      "stderr_sha256": "6a013b71d94eadb16a930c32d667b41cd78de87ee97381f3cb81ed13fbe986e3",
+      "stdout_bytes": 312,
+      "stderr_bytes": 153,
+      "stdout_excerpt": "\n RUN  v1.6.1 /Users/khoala/Work/myproject/pos-omnichannel\n\n ✓ apps/server/src/modules/staff/staff.service.test.ts  (6 tests) 3ms\n\n Test Files  1 passed (1)\n      Tests  6 passed (6)\n   Start at  11:09:41\n   Duration  274ms (transform 26ms, setup 0ms, collect 131ms, tests 3ms, environment 0ms, prepare 43ms)\n\n",
+      "stderr_excerpt": "\u001b[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.\u001b[39m\n"
+    },
+    {
+      "name": "typecheck",
+      "command": "npx tsc --noEmit apps/server/src/modules/staff/*.ts",
+      "declared_browser": false,
+      "acceptance_criteria": [],
+      "exit_code": 2,
+      "timed_out": false,
+      "started_at": "2026-08-23T04:09:41Z",
+      "finished_at": "2026-08-23T04:09:43Z",
+      "duration_s": 1.965,
+      "stdout_sha256": "639ec69780c7d3b4f22385c52fc169d63d524dd1d5748be61ccd5eeaa9c2d1d8",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 387,
+      "stderr_bytes": 0,
+      "stdout_excerpt": "node_modules/vite/dist/node/index.d.ts(5,41): error TS2307: Cannot find module 'rollup/parseAst' or its corresponding type declarations.\n  There are types at '/Users/khoala/Work/myproject/pos-omnichannel/node_modules/rollup/dist/parseAst.d.ts', but this result could not be resolved under your current 'moduleResolution' setting. Consider updating to 'node16', 'nodenext', or 'bundler'.\n",
+      "stderr_excerpt": ""
+    }
+  ],
+  "acceptance_criteria": [],
+  "page_contract": null,
+  "browser_evidence": {
+    "declared_by_caller": false,
+    "runner_inspected_browser": false,
+    "semantics": "Runner chi thuc thi lenh do caller khai bao qua --browser-command va ghi lai exit code cung hash output. Runner khong mo trinh duyet, khong doc DOM, khong so sanh pixel va khong xac minh rang lenh do thuc su kiem tra giao dien. Exit code 0 chi chung minh lenh tu bao thanh cong; assertion trong chinh lenh Playwright cua project la nguon su that ve hanh vi trang.",
+    "commands": []
+  },
+  "failures": [
+    "command_failed:typecheck"
+  ],
+  "verdict": "FAIL"
+}

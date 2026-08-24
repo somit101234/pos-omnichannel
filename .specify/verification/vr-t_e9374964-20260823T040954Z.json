@@ -1,0 +1,62 @@
+{
+  "schema_version": "verification-receipt-v1",
+  "receipt_id": "vr-t_e9374964-20260823T040954Z",
+  "generated_at": "2026-08-23T04:09:55Z",
+  "generated_by": "scripts/verification-receipt.py",
+  "task_id": "t_e9374964",
+  "kind": "api",
+  "project_root": "/Users/khoala/Work/myproject/pos-omnichannel",
+  "git_toplevel": "/Users/khoala/Work/myproject/pos-omnichannel",
+  "commit_sha": "21e8ed545137f4816175400390ee86dc5eb27916",
+  "declared_sha": "21e8ed545137f4816175400390ee86dc5eb27916",
+  "worktree_clean": false,
+  "execution_contract": null,
+  "commands": [
+    {
+      "name": "test",
+      "command": "npx vitest run apps/server/src/modules/staff/staff.service.test.ts",
+      "declared_browser": false,
+      "acceptance_criteria": [],
+      "exit_code": 0,
+      "timed_out": false,
+      "started_at": "2026-08-23T04:09:54Z",
+      "finished_at": "2026-08-23T04:09:55Z",
+      "duration_s": 0.583,
+      "stdout_sha256": "367d16111b9c50703b9ae5c4c89fce33e28cd207070a73ea5dcaa289069b38f3",
+      "stderr_sha256": "6a013b71d94eadb16a930c32d667b41cd78de87ee97381f3cb81ed13fbe986e3",
+      "stdout_bytes": 311,
+      "stderr_bytes": 153,
+      "stdout_excerpt": "\n RUN  v1.6.1 /Users/khoala/Work/myproject/pos-omnichannel\n\n ✓ apps/server/src/modules/staff/staff.service.test.ts  (6 tests) 3ms\n\n Test Files  1 passed (1)\n      Tests  6 passed (6)\n   Start at  11:09:54\n   Duration  195ms (transform 22ms, setup 0ms, collect 69ms, tests 3ms, environment 0ms, prepare 39ms)\n\n",
+      "stderr_excerpt": "\u001b[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.\u001b[39m\n"
+    },
+    {
+      "name": "typecheck",
+      "command": "npx tsc --noEmit",
+      "declared_browser": false,
+      "acceptance_criteria": [],
+      "exit_code": 1,
+      "timed_out": false,
+      "started_at": "2026-08-23T04:09:55Z",
+      "finished_at": "2026-08-23T04:09:55Z",
+      "duration_s": 0.799,
+      "stdout_sha256": "da671b7a0cdb74285bcae80600c8dfef733f46b67560627e36f479d2f657e0b0",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 131,
+      "stderr_bytes": 0,
+      "stdout_excerpt": "apps/server/src/modules/shift/shift.service.test.ts(4,15): error TS2305: Module '\"@prisma/client\"' has no exported member 'Shift'.\n",
+      "stderr_excerpt": ""
+    }
+  ],
+  "acceptance_criteria": [],
+  "page_contract": null,
+  "browser_evidence": {
+    "declared_by_caller": false,
+    "runner_inspected_browser": false,
+    "semantics": "Runner chi thuc thi lenh do caller khai bao qua --browser-command va ghi lai exit code cung hash output. Runner khong mo trinh duyet, khong doc DOM, khong so sanh pixel va khong xac minh rang lenh do thuc su kiem tra giao dien. Exit code 0 chi chung minh lenh tu bao thanh cong; assertion trong chinh lenh Playwright cua project la nguon su that ve hanh vi trang.",
+    "commands": []
+  },
+  "failures": [
+    "command_failed:typecheck"
+  ],
+  "verdict": "FAIL"
+}

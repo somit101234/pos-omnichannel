@@ -1,0 +1,86 @@
+{
+  "schema_version": "verification-receipt-v1",
+  "receipt_id": "vr-t_979cf6fa-20260823T081817Z",
+  "generated_at": "2026-08-23T08:18:20Z",
+  "generated_by": "scripts/verification-receipt.py",
+  "task_id": "t_979cf6fa",
+  "kind": "web",
+  "project_root": "/Users/khoala/Work/myproject/pos-omnichannel",
+  "git_toplevel": "/Users/khoala/Work/myproject/pos-omnichannel",
+  "commit_sha": "21e8ed545137f4816175400390ee86dc5eb27916",
+  "declared_sha": "cf4e62078fb8787eed74a164600926beb5d9bf50",
+  "worktree_clean": false,
+  "execution_contract": null,
+  "commands": [
+    {
+      "name": "typecheck",
+      "command": "tsc --noEmit",
+      "declared_browser": false,
+      "acceptance_criteria": [],
+      "exit_code": 2,
+      "timed_out": false,
+      "started_at": "2026-08-23T08:18:17Z",
+      "finished_at": "2026-08-23T08:18:18Z",
+      "duration_s": 1.172,
+      "stdout_sha256": "0a084d92d6d4384407b07708ca36b55bfc89ca505e7950c35ccd79ae152e802f",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 241,
+      "stderr_bytes": 0,
+      "stdout_excerpt": "tsconfig.json(12,5): error TS5101: Option 'baseUrl' is deprecated and will stop functioning in TypeScript 7.0. Specify compilerOption '\"ignoreDeprecations\": \"6.0\"' to silence this error.\n  Visit https://aka.ms/ts6 for migration information.\n",
+      "stderr_excerpt": ""
+    },
+    {
+      "name": "login-test",
+      "command": "npx playwright test --grep \"login\"",
+      "declared_browser": true,
+      "acceptance_criteria": [],
+      "exit_code": 1,
+      "timed_out": false,
+      "started_at": "2026-08-23T08:18:18Z",
+      "finished_at": "2026-08-23T08:18:20Z",
+      "duration_s": 2.047,
+      "stdout_sha256": "ec010f5544186f26ae14701526e857712d13cd2cf431a622f8216d79c8dd5825",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 20149,
+      "stderr_bytes": 0,
+      "stdout_excerpt": "heck page\n  22 |   await page.goto('/inventory');\n  23 |   await expect(page.locator('h1', { hasText: /Kiểm kho/i })).toBeVisible();\n    at _TestTypeImpl._currentSuite (/Users/khoala/Work/myproject/pos-omnichannel/e2e/node_modules/playwright/lib/common/index.js:2263:13)\n    at _TestTypeImpl._createTest (/Users/khoala/Work/myproject/pos-omnichannel/e2e/node_modules/playwright/lib/common/index.js:2277:24)\n    at /Users/khoala/Work/myproject/pos-omnichannel/e2e/node_modules/playwright/lib/common/index.js:1209:12\n    at Object.<anonymous> (/Users/khoala/Work/myproject/pos-omnichannel/e2e/tests/inventory-e2e.spec.ts:20:5)\nError: Playwright Test did not expect test() to be called here.\nMost common reasons include:\n- You are calling test() in a configuration file.\n- You are calling test() in a file that is imported by the configuration file.\n- You have two different versions of @playwright/test. This usually happens\n  when one of the dependencies in your package.json depends on @playwright/test.\n- You are calling test() from an async test.describe() block. Only sync ones are supported.\n\n   at e2e/tests/pos-e2e.spec.ts:21\n\n  19 | // AC1: Scan barcode → product in cart\n  20 | // ──────────────────────────────────────────────\n> 21 | test('AC1 — scan barcode (search) → product added to cart', async ({ page }) => {\n     |     ^\n  22 |   // 1. Go to POS page directly\n  23 |   //    The route should be: <Route path=\"/pos\" element={<POSPage />} />\n  24 |   await page.goto('/pos');\n    at _TestTypeImpl._currentSuite (/Users/khoala/Work/myproject/pos-omnichannel/e2e/node_modules/playwright/lib/common/index.js:2263:13)\n    at _TestTypeImpl._createTest (/Users/khoala/Work/myproject/pos-omnichannel/e2e/node_modules/playwright/lib/common/index.js:2277:24)\n    at /Users/khoala/Work/myproject/pos-omnichannel/e2e/node_modules/playwright/lib/common/index.js:1209:12\n    at Object.<anonymous> (/Users/khoala/Work/myproject/pos-omnichannel/e2e/tests/pos-e2e.spec.ts:21:5)\nError: No tests found\n\n",
+      "stderr_excerpt": ""
+    }
+  ],
+  "acceptance_criteria": [],
+  "page_contract": {
+    "path": "/Users/khoala/Work/myproject/pos-omnichannel/.specify/contracts/page-login.md",
+    "sha256": "17e7ca944f5a4300043b8eb911e1ba6a5387f6b7482514bd96f7e9e53d0e619a",
+    "valid": true,
+    "sections_present": [
+      "actor",
+      "precondition",
+      "success_state",
+      "empty_state",
+      "error_state",
+      "primary_interaction",
+      "negative_oracle"
+    ],
+    "missing_sections": []
+  },
+  "browser_evidence": {
+    "declared_by_caller": true,
+    "runner_inspected_browser": false,
+    "semantics": "Runner chi thuc thi lenh do caller khai bao qua --browser-command va ghi lai exit code cung hash output. Runner khong mo trinh duyet, khong doc DOM, khong so sanh pixel va khong xac minh rang lenh do thuc su kiem tra giao dien. Exit code 0 chi chung minh lenh tu bao thanh cong; assertion trong chinh lenh Playwright cua project la nguon su that ve hanh vi trang.",
+    "commands": [
+      {
+        "name": "login-test",
+        "command": "npx playwright test --grep \"login\"",
+        "exit_code": 1,
+        "stdout_sha256": "ec010f5544186f26ae14701526e857712d13cd2cf431a622f8216d79c8dd5825",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    ]
+  },
+  "failures": [
+    "sha_mismatch",
+    "command_failed:typecheck",
+    "browser_command_failed:login-test"
+  ],
+  "verdict": "FAIL"
+}

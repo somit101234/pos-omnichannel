@@ -1,0 +1,49 @@
+{
+  "schema_version": "verification-receipt-v1",
+  "receipt_id": "vr-t_819f0f9d-20260823T075712Z",
+  "generated_at": "2026-08-23T07:57:13Z",
+  "generated_by": "scripts/verification-receipt.py",
+  "task_id": "t_819f0f9d",
+  "kind": "cli",
+  "project_root": "/Users/khoala/Work/myproject/pos-omnichannel",
+  "git_toplevel": "/Users/khoala/Work/myproject/pos-omnichannel",
+  "commit_sha": "21e8ed545137f4816175400390ee86dc5eb27916",
+  "declared_sha": "a4d5f0a994a36fcf6f3cf55d99251ac013e96757",
+  "worktree_clean": false,
+  "execution_contract": null,
+  "commands": [
+    {
+      "name": "vitest",
+      "command": "npx vitest run src/modules/reports/reports.service.test.ts --no-coverage",
+      "declared_browser": false,
+      "acceptance_criteria": [
+        "AC1"
+      ],
+      "exit_code": 0,
+      "timed_out": false,
+      "started_at": "2026-08-23T07:57:12Z",
+      "finished_at": "2026-08-23T07:57:13Z",
+      "duration_s": 0.686,
+      "stdout_sha256": "c82d3500c6cd9428b6097dc08eb3cfd1646ec1e84d897bcec4f301edb867760a",
+      "stderr_sha256": "6a013b71d94eadb16a930c32d667b41cd78de87ee97381f3cb81ed13fbe986e3",
+      "stdout_bytes": 1311,
+      "stderr_bytes": 153,
+      "stdout_excerpt": "\n RUN  v1.6.1 /Users/khoala/Work/myproject/pos-omnichannel\n\nstdout | apps/server/src/modules/reports/reports.service.test.ts > ReportsService — Dashboard & Revenue/Profit Reports > Test 1 — Dashboard KPIs > should calculate today revenue from transactions\nDEBUG: transactionsArray length: 3\nDEBUG getDashboardKpis: { storeId: 'store_1', todayTransactionsLength: 3 }\nDEBUG orderCount: 3 number\n\nstdout | apps/server/src/modules/reports/reports.service.test.ts > ReportsService — Dashboard & Revenue/Profit Reports > Test 1 — Dashboard KPIs > should count today's orders correctly\nDEBUG: transactionsArray length: 3\nDEBUG getDashboardKpis: { storeId: 'store_1', todayTransactionsLength: 2 }\nDEBUG orderCount: 2 number\n\nstdout | apps/server/src/modules/reports/reports.service.test.ts > ReportsService — Dashboard & Revenue/Profit Reports > Test 1 — Dashboard KPIs > should return top 5 products by sales\nDEBUG: transactionsArray length: 5\nDEBUG getDashboardKpis: { storeId: 'store_1', todayTransactionsLength: 5 }\nDEBUG orderCount: 5 number\n\n ✓ apps/server/src/modules/reports/reports.service.test.ts  (10 tests) 3ms\n\n Test Files  1 passed (1)\n      Tests  10 passed (10)\n   Start at  14:57:12\n   Duration  290ms (transform 28ms, setup 0ms, collect 140ms, tests 3ms, environment 0ms, prepare 52ms)\n\n",
+      "stderr_excerpt": "\u001b[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.\u001b[39m\n"
+    }
+  ],
+  "acceptance_criteria": [
+    "AC1"
+  ],
+  "page_contract": null,
+  "browser_evidence": {
+    "declared_by_caller": false,
+    "runner_inspected_browser": false,
+    "semantics": "Runner chi thuc thi lenh do caller khai bao qua --browser-command va ghi lai exit code cung hash output. Runner khong mo trinh duyet, khong doc DOM, khong so sanh pixel va khong xac minh rang lenh do thuc su kiem tra giao dien. Exit code 0 chi chung minh lenh tu bao thanh cong; assertion trong chinh lenh Playwright cua project la nguon su that ve hanh vi trang.",
+    "commands": []
+  },
+  "failures": [
+    "sha_mismatch"
+  ],
+  "verdict": "FAIL"
+}

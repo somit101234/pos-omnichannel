@@ -1,0 +1,63 @@
+{
+  "schema_version": "verification-receipt-v1",
+  "receipt_id": "vr-t_e9374964-20260823T040717Z",
+  "generated_at": "2026-08-23T04:07:19Z",
+  "generated_by": "scripts/verification-receipt.py",
+  "task_id": "t_e9374964",
+  "kind": "api",
+  "project_root": "/Users/khoala/Work/myproject/pos-omnichannel",
+  "git_toplevel": "/Users/khoala/Work/myproject/pos-omnichannel",
+  "commit_sha": "09cff16783a4e70c7f9b4b6053bbd6a0726b547b",
+  "declared_sha": "09cff16783a4e70c7f9b4b6053bbd6a0726b547b",
+  "worktree_clean": false,
+  "execution_contract": null,
+  "commands": [
+    {
+      "name": "test",
+      "command": "npx vitest run apps/server/src/modules/staff/staff.service.test.ts",
+      "declared_browser": false,
+      "acceptance_criteria": [],
+      "exit_code": 1,
+      "timed_out": false,
+      "started_at": "2026-08-23T04:07:17Z",
+      "finished_at": "2026-08-23T04:07:18Z",
+      "duration_s": 0.647,
+      "stdout_sha256": "960dc069526504ee2942bd2086a85b0342ec58335d7d89fa485c144695ddde4f",
+      "stderr_sha256": "1b6275b2ef50b848d7ecc46e297e62b0158c79539cf86f6e7416d16f515dc629",
+      "stdout_bytes": 1283,
+      "stderr_bytes": 3380,
+      "stdout_excerpt": "\n RUN  v1.6.1 /Users/khoala/Work/myproject/pos-omnichannel\n\n ❯ apps/server/src/modules/staff/staff.service.test.ts  (5 tests | 5 failed) 5ms\n   ❯ apps/server/src/modules/staff/staff.service.test.ts > StaffService > AC1 — Create staff > should create a new staff with role\n     → expected true to be false // Object.is equality\n   ❯ apps/server/src/modules/staff/staff.service.test.ts > StaffService > AC2 — List staff > should return list of staff with role badges\n     → expected true to be false // Object.is equality\n   ❯ apps/server/src/modules/staff/staff.service.test.ts > StaffService > AC3 — Assign role > should update staff role\n     → expected true to be false // Object.is equality\n   ❯ apps/server/src/modules/staff/staff.service.test.ts > StaffService > AC4 — Soft delete > should deactivate staff (isActive=false)\n     → expected true to be false // Object.is equality\n   ❯ apps/server/src/modules/staff/staff.service.test.ts > StaffService > AC5 — Reactivate > should reactivate staff (isActive=true)\n     → expected true to be false // Object.is equality\n\n Test Files  1 failed (1)\n      Tests  5 failed (5)\n   Start at  11:07:18\n   Duration  167ms (transform 18ms, setup 0ms, collect 13ms, tests 5ms, environment 0ms, prepare 48ms)\n\n",
+      "stderr_excerpt": "('should return list of staff with role badges', () => {\n     14|       // TODO: Implement after StaffService is created\n     15|       expect(true).toBe(false); // FAIL expected\n       |                    ^\n     16|     });\n     17|   });\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/5]⎯\n\n FAIL  apps/server/src/modules/staff/staff.service.test.ts > StaffService > AC3 — Assign role > should update staff role\nAssertionError: expected true to be false // Object.is equality\n\n- Expected\n+ Received\n\n- false\n+ true\n\n ❯ apps/server/src/modules/staff/staff.service.test.ts:22:20\n     20|     it('should update staff role', () => {\n     21|       // TODO: Implement after StaffService is created\n     22|       expect(true).toBe(false); // FAIL expected\n       |                    ^\n     23|     });\n     24|   });\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/5]⎯\n\n FAIL  apps/server/src/modules/staff/staff.service.test.ts > StaffService > AC4 — Soft delete > should deactivate staff (isActive=false)\nAssertionError: expected true to be false // Object.is equality\n\n- Expected\n+ Received\n\n- false\n+ true\n\n ❯ apps/server/src/modules/staff/staff.service.test.ts:29:20\n     27|     it('should deactivate staff (isActive=false)', () => {\n     28|       // TODO: Implement after StaffService is created\n     29|       expect(true).toBe(false); // FAIL expected\n       |                    ^\n     30|     });\n     31|   });\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/5]⎯\n\n FAIL  apps/server/src/modules/staff/staff.service.test.ts > StaffService > AC5 — Reactivate > should reactivate staff (isActive=true)\nAssertionError: expected true to be false // Object.is equality\n\n- Expected\n+ Received\n\n- false\n+ true\n\n ❯ apps/server/src/modules/staff/staff.service.test.ts:36:20\n     34|     it('should reactivate staff (isActive=true)', () => {\n     35|       // TODO: Implement after StaffService is created\n     36|       expect(true).toBe(false); // FAIL expected\n       |                    ^\n     37|     });\n     38|   });\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/5]⎯\n\n"
+    },
+    {
+      "name": "typecheck",
+      "command": "npx tsc --noEmit",
+      "declared_browser": false,
+      "acceptance_criteria": [],
+      "exit_code": 2,
+      "timed_out": false,
+      "started_at": "2026-08-23T04:07:18Z",
+      "finished_at": "2026-08-23T04:07:19Z",
+      "duration_s": 0.971,
+      "stdout_sha256": "da671b7a0cdb74285bcae80600c8dfef733f46b67560627e36f479d2f657e0b0",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 131,
+      "stderr_bytes": 0,
+      "stdout_excerpt": "apps/server/src/modules/shift/shift.service.test.ts(4,15): error TS2305: Module '\"@prisma/client\"' has no exported member 'Shift'.\n",
+      "stderr_excerpt": ""
+    }
+  ],
+  "acceptance_criteria": [],
+  "page_contract": null,
+  "browser_evidence": {
+    "declared_by_caller": false,
+    "runner_inspected_browser": false,
+    "semantics": "Runner chi thuc thi lenh do caller khai bao qua --browser-command va ghi lai exit code cung hash output. Runner khong mo trinh duyet, khong doc DOM, khong so sanh pixel va khong xac minh rang lenh do thuc su kiem tra giao dien. Exit code 0 chi chung minh lenh tu bao thanh cong; assertion trong chinh lenh Playwright cua project la nguon su that ve hanh vi trang.",
+    "commands": []
+  },
+  "failures": [
+    "command_failed:test",
+    "command_failed:typecheck"
+  ],
+  "verdict": "FAIL"
+}

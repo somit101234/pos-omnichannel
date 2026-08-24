@@ -1,0 +1,46 @@
+{
+  "schema_version": "verification-receipt-v1",
+  "receipt_id": "vr-t_819f0f9d-20260823T075800Z",
+  "generated_at": "2026-08-23T07:57:31Z",
+  "generated_by": "scripts/verification-receipt.py",
+  "task_id": "t_819f0f9d",
+  "kind": "cli",
+  "project_root": "/Users/khoala/Work/myproject/pos-omnichannel",
+  "git_toplevel": "/Users/khoala/Work/myproject/pos-omnichannel",
+  "commit_sha": "a4d5f0a994a36fcf6f3cf55d99251ac013e96757",
+  "declared_sha": "a4d5f0a994a36fcf6f3cf55d99251ac013e96757",
+  "worktree_clean": true,
+  "execution_contract": null,
+  "commands": [
+    {
+      "name": "vitest",
+      "command": "npx vitest run src/modules/reports/reports.service.test.ts --no-coverage",
+      "declared_browser": false,
+      "acceptance_criteria": [
+        "AC1"
+      ],
+      "exit_code": 0,
+      "timed_out": false,
+      "started_at": "2026-08-23T07:57:00Z",
+      "finished_at": "2026-08-23T07:57:01Z",
+      "duration_s": 0.325,
+      "stdout_sha256": "72e215487357535978738cb67fbd0bae3a6e135514f36d13442fabc4f3a38ccd",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 1310,
+      "stderr_bytes": 0,
+      "stdout_excerpt": "\n RUN  v1.6.1 /Users/khoala/Work/myproject/pos-omnichannel\n\nstdout | apps/server/src/modules/reports/reports.service.test.ts > ReportsService — Dashboard & Revenue/Profit Reports > Test 1 — Dashboard KPIs > should calculate today revenue from transactions\nDEBUG: transactionsArray length: 3\nDEBUG getDashboardKpis: { storeId: 'store_1', todayTransactionsLength: 3 }\nDEBUG orderCount: 3 number\n\nstdout | apps/server/src/modules/reports/reports.service.test.ts > ReportsService — Dashboard & Revenue/Profit Reports > Test 1 — Dashboard KPIs > should count today's orders correctly\nDEBUG: transactionsArray length: 3\nDEBUG getDashboardKpis: { storeId: 'store_1', todayTransactionsLength: 2 }\nDEBUG orderCount: 2 number\n\nstdout | apps/server/src/modules/reports/reports.service.test.ts > ReportsService — Dashboard & Revenue/Profit Reports > Test 1 — Dashboard KPIs > should return top 5 products by sales\nDEBUG: transactionsArray length: 5\nDEBUG getDashboardKpis: { storeId: 'store_1', todayTransactionsLength: 5 }\nDEBUG orderCount: 5 number\n\n ✓ apps/server/src/modules/reports/reports.service.test.ts  (10 tests) 3ms\n\n Test Files  1 passed (1)\n      Tests  10 passed (10)\n   Start at  14:57:00\n   Duration  325ms (transform 33ms, setup 0ms, collect 161ms, tests 3ms, environment 0ms, prepare 47ms)\n"
+    }
+  ],
+  "acceptance_criteria": [
+    "AC1"
+  ],
+  "page_contract": null,
+  "browser_evidence": {
+    "declared_by_caller": false,
+    "runner_inspected_browser": false,
+    "semantics": "Runner chi thuc thi lenh do caller khai bao qua --browser-command va ghi lai exit code cung hash output.",
+    "commands": []
+  },
+  "failures": [],
+  "verdict": "PASS"
+}
