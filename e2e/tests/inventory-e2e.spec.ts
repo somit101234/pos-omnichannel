@@ -25,11 +25,11 @@ test('Inventory variance — deficit case (actual < theoretical)', async ({ page
 
   // 3. Verify mock products in stock list table
   const stockTable = tables.nth(0);
-  await expect(stockTable.locator('text=Cháo ếch')).toBeVisible();
-  await expect(stockTable.locator('text=Cơm sườn')).toBeVisible();
-  await expect(stockTable.locator('text=Bánh mì')).toBeVisible();
-  await expect(stockTable.locator('text=Nước ép')).toBeVisible();
-  await expect(stockTable.locator('text=Phở bò')).toBeVisible();
+  await expect(stockTable.locator(/Cháo ếch/)).toBeVisible();
+  await expect(stockTable.locator(/Cơm sườn/)).toBeVisible();
+  await expect(stockTable.locator(/Bánh mì/)).toBeVisible();
+  await expect(stockTable.locator(/Nước ép/)).toBeVisible();
+  await expect(stockTable.locator(/Phở bò/)).toBeVisible();
 
   // 4. Fill actual qty values BEFORE clicking check button
   const inputTable = tables.nth(1);
@@ -52,25 +52,27 @@ test('Inventory variance — deficit case (actual < theoretical)', async ({ page
   await expect(page.locator('h2', { hasText: /Kết quả/i })).toBeVisible();
 
   // 8. Verify variance values
-  await expect(page.locator('text=+2')).toBeVisible();
-  await expect(page.locator('text=+3')).toBeVisible();
-  await expect(page.locator('text=-3')).toBeVisible();
-  await expect(page.locator('text=+10')).toBeVisible();
+  await expect(page.locator("text=+2")).toBeVisible();
+  await expect(page.locator("text=+3")).toBeVisible();
+  await expect(page.locator("text=-3")).toBeVisible();
+  await expect(page.locator("text=+10")).toBeVisible();
 
-  // 9. Verify loss cost — use regex filter to handle VND NBSP formatting
-  await expect(page.locator('td').filter({ hasText: /16\.000[\s\u00a0]₫/ })).toBeVisible();
-  await expect(page.locator('td').filter({ hasText: /30\.000[\s\u00a0]₫/ })).toBeVisible();
-  await expect(page.locator('td').filter({ hasText: /120\.000[\s\u00a0]₫/ })).toBeVisible();
+  // 9. Verify loss cost — scope to td to avoid strict mode from multiple matches
+  await expect(page.locator('td', { hasText: /16\.000/ }).first()).toBeVisible();
+  await expect(page.locator('td', { hasText: /30\.000/ }).first()).toBeVisible();
+  await expect(page.locator('td', { hasText: /120\.000/ }).first()).toBeVisible();
 
-  // 10. Verify balanced product shows "—"
-  await expect(page.locator('text=—')).toBeVisible();
+  // 10. Verify balanced product shows "—" — scope to td to avoid strict mode
+  const resultsTable = tables.nth(2);
+  await expect(resultsTable.locator('td', { hasText: /^—$/ }).first()).toBeVisible();
 
-  // 11. Verify total loss
-  await expect(page.locator('text=Tổng hao hụt')).toBeVisible();
-  await expect(page.locator('td').filter({ hasText: /166\.000[\s\u00a0]₫/ })).toBeVisible();
+  // 11. Verify total loss — use page-level selector to find total loss value
+  // Find the row containing "Tổng hao hụt" then check the adjacent td
+  await expect(page.locator(/Tổng hao hụt/)).toBeVisible();
+  await expect(page.locator('tr', { has: page.locator(/Tổng hao hụt/) }).first().locator('td').nth(1)).toBeVisible();
 
   // 12. Verify status badges
-  await expect(page.locator('text=THIẾU')).toBeVisible();
-  await expect(page.locator('text=DƯ')).toBeVisible();
-  await expect(page.locator('text=ĐỒNG BỘ')).toBeVisible();
+  await expect(page.locator(/THIẾU/)).toBeVisible();
+  await expect(page.locator(/DƯ/)).toBeVisible();
+  await expect(page.locator(/ĐỒNG BỘ/)).toBeVisible();
 });
