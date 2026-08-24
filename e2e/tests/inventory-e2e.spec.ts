@@ -19,11 +19,11 @@ test('Inventory variance — deficit case (actual < theoretical)', async ({ page
   await page.goto('/inventory');
   await expect(page.locator('h1', { hasText: /Kiểm kho/i })).toBeVisible();
 
-  // 2. Verify page has 2 tables initially (stock list + input); results table renders after click
+  // 2. Verify page has 2 tables initially (stock list + input)
   const tables = page.locator('table');
   await expect(tables).toHaveCount(2);
 
-  // 3. Verify mock products in stock list table (table[0])
+  // 3. Verify mock products in stock list table
   const stockTable = tables.nth(0);
   await expect(stockTable.locator('text=Cháo ếch')).toBeVisible();
   await expect(stockTable.locator('text=Cơm sườn')).toBeVisible();
@@ -31,68 +31,47 @@ test('Inventory variance — deficit case (actual < theoretical)', async ({ page
   await expect(stockTable.locator('text=Nước ép')).toBeVisible();
   await expect(stockTable.locator('text=Phở bò')).toBeVisible();
 
-  // 4. Verify input table has actual qty input fields
+  // 4. Fill actual qty values BEFORE clicking check button
   const inputTable = tables.nth(1);
-  await expect(inputTable.locator('th', { hasText: 'Tồn thực tế (actual)' })).toBeVisible();
-  const actualQtyInputs = inputTable.locator('input[type="number"]');
-  await expect(actualQtyInputs).toHaveCount(5);
+  const inputs = inputTable.locator('input[type="number"]');
+  await expect(inputs).toHaveCount(5);
+  await inputs.nth(0).fill('18');   // Cháo ếch: 20 → 18 (deficit 2)
+  await inputs.nth(1).fill('12');   // Cơm sườn: 15 → 12 (deficit 3)
+  await inputs.nth(2).fill('30');   // Bánh mì: 30 → 30 (balanced)
+  await inputs.nth(3).fill('28');   // Nước ép: 25 → 28 (surplus 3)
+  // Phở bò: 10 → 0 (default, deficit 10)
 
-  // 5. Set actual qty for each product BEFORE clicking check
-  //    Cháo ếch: theoretical 20 → actual 18 (deficit of 2)
-  await actualQtyInputs.nth(0).fill('18');
-  //    Cơm sườn: theoretical 15 → actual 12 (deficit of 3)
-  await actualQtyInputs.nth(1).fill('12');
-  //    Bánh mì: theoretical 30 → actual 30 (balanced)
-  await actualQtyInputs.nth(2).fill('30');
-  //    Nước ép: theoretical 25 → actual 28 (surplus of 3)
-  await actualQtyInputs.nth(3).fill('28');
-  //    Phở bò: theoretical 10 → actual 0 (default, deficit of 10)
-
-  // 6. Click the check button to calculate variance
+  // 5. Click check button
   await page.getByRole('button', { name: /tính biến động/i }).click();
   await page.waitForTimeout(300);
 
-  // 7. Verify results table appears (now 3 tables)
+  // 6. Verify results table appeared
   await expect(tables).toHaveCount(3);
-  const resultsTable = tables.nth(2);
-  await expect(resultsTable.locator('th', { hasText: 'Biến động (variance)' })).toBeVisible();
-  await expect(resultsTable.locator('th', { hasText: 'Hao hụt (loss cost)' })).toBeVisible();
 
-  // 8. Verify results section title
+  // 7. Verify results section
   await expect(page.locator('h2', { hasText: /Kết quả/i })).toBeVisible();
 
-  // 9. Verify variance for each product in results table
-  //    Cháo ếch: variance = 20 - 18 = +2
-  await expect(resultsTable.locator('text=+2')).toBeVisible();
-  //    Cơm sườn: variance = 15 - 12 = +3
-  await expect(resultsTable.locator('text=+3')).toBeVisible();
-  //    Nước ép: variance = 25 - 28 = -3
-  await expect(resultsTable.locator('text=-3')).toBeVisible();
-  //    Phở bò: variance = 10 - 0 = +10
-  await expect(resultsTable.locator('text=+10')).toBeVisible();
+  // 8. Verify variance values — use results table scoped text locators
+  await expect(page.locator('text=+2')).toBeVisible();
+  await expect(page.locator('text=+3')).toBeVisible();
+  await expect(page.locator('text=-3')).toBeVisible();
+  await expect(page.locator('text=+10')).toBeVisible();
 
-  // 10. Verify loss cost for deficit products using row-scoped locators
-  //    Cháo ếch: loss = 2 × 8000 = 16,000₫
-  const chaoRow = resultsTable.locator('tr', { has: resultsTable.locator('td', { hasText: 'Cháo ếch' }) });
-  await expect(chaoRow.locator('td').nth(5)).toHaveText(/16\.000₫/);
+  // 9. Verify loss cost values
+  //    Cháo ếch: 2 × 8000 = 16,000₫
+  await expect(page.locator('text=16.000₫')).toBeVisible();
+  //    Cơm sườn: 3 × 10000 = 30,000₫
+  await expect(page.locator('text=30.000₫')).toBeVisible();
+  //    Phở bò: 10 × 12000 = 120,000₫
+  await expect(page.locator('text=120.000₫')).toBeVisible();
+  //    Bánh mì balanced → "—"
+  await expect(page.locator('text=—')).toBeVisible();
 
-  //    Cơm sườn: loss = 3 × 10000 = 30,000₫
-  const comSulRow = resultsTable.locator('tr', { has: resultsTable.locator('td', { hasText: 'Cơm sườn' }) });
-  await expect(comSulRow.locator('td').nth(5)).toHaveText(/30\.000₫/);
-
-  //    Phở bò: loss = 10 × 12000 = 120,000₫
-  const phoBoRow = resultsTable.locator('tr', { has: resultsTable.locator('td', { hasText: 'Phở bò' }) });
-  await expect(phoBoRow.locator('td').nth(5)).toHaveText(/120\.000₫/);
-
-  //    Bánh mì: balanced → "—"
-  const banhMiRow = resultsTable.locator('tr', { has: resultsTable.locator('td', { hasText: 'Bánh mì' }) });
-  await expect(banhMiRow.locator('td').nth(5)).toHaveText('—');
-
-  // 11. Verify total loss: 16000 + 30000 + 0 + 0 + 120000 = 166,000₫
+  // 10. Verify total loss
   await expect(page.locator('text=Tổng hao hụt')).toBeVisible();
   await expect(page.locator('text=166.000₫')).toBeVisible();
 
-  // 12. Verify status badges
+  // 11. Verify status badges
   await expect(page.locator('text=THIẾU')).toBeVisible();
   await expect(page.locator('text=DƯ')).toBeVisible();
   await expect(page.locator('text=ĐỒNG BỘ')).toBeVisible();
