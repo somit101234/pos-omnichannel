@@ -60,7 +60,7 @@ test('AC2 — login as MANAGER, access manager features → pass', async ({ page
   await expect(page.locator('h1', { hasText: /tổng quan/i })).toBeVisible();
 
   // 5. Verify the page shows manager-relevant stats
-  await expect(page.locator('text=/doanh thu hôm nay|số đơn hàng/i')).toBeVisible();
+  await expect(page.getByText(/doanh thu hôm nay/i)).toBeVisible();
 
   // 6. Confirm the page is fully rendered
   const pageTitle = await page.locator('h1').first().textContent();
