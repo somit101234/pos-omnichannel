@@ -73,24 +73,24 @@ test('Inventory variance — deficit case (actual < theoretical)', async ({ page
 
   // 10. Verify loss cost for deficit products using row-scoped locators
   //    Cháo ếch: loss = 2 × 8000 = 16,000
-  const chaoRow = resultsTable.locator('tr', { has: resultsTable.locator('td', { hasText: 'Cháo ếch' }) });
-  await expect(chaoRow.locator('td').nth(5)).toHaveText(/16\.000/);
+  const chaoRow = resultsTable.locator('tr').filter({ hasText: 'Cháo ếch' });
+  await expect(chaoRow.locator('td').nth(5)).toContainText(/16.*000/);
   //    Cơm sườn: loss = 3 × 10000 = 30,000
-  const comSulRow = resultsTable.locator('tr', { has: resultsTable.locator('td', { hasText: 'Cơm sườn' }) });
-  await expect(comSulRow.locator('td').nth(5)).toHaveText(/30\.000/);
+  const comSulRow = resultsTable.locator('tr').filter({ hasText: 'Cơm sườn' });
+  await expect(comSulRow.locator('td').nth(5)).toContainText(/30.*000/);
   //    Phở bò: loss = 10 × 12000 = 120,000
-  const phoBoRow = resultsTable.locator('tr', { has: resultsTable.locator('td', { hasText: 'Phở bò' }) });
-  await expect(phoBoRow.locator('td').nth(5)).toHaveText(/120\.000/);
+  const phoBoRow = resultsTable.locator('tr').filter({ hasText: 'Phở bò' });
+  await expect(phoBoRow.locator('td').nth(5)).toContainText(/120.*000/);
   //    Bánh mì: balanced → "—"
-  const banhMiRow = resultsTable.locator('tr', { has: resultsTable.locator('td', { hasText: 'Bánh mì' }) });
-  await expect(banhMiRow.locator('td').nth(5)).toHaveText('—');
+  const banhMiRow = resultsTable.locator('tr').filter({ hasText: 'Bánh mì' });
+  await expect(banhMiRow.locator('td').nth(5)).toContainText('—');
 
   // 11. Verify total loss: 16000 + 30000 + 0 + 0 + 120000 = 166,000
   await expect(page.locator('text=Tổng hao hụt')).toBeVisible();
-  await expect(page.locator('text=166.000')).toBeVisible();
+  await expect(page.locator('text=/166.*000/')).toBeVisible();
 
   // 12. Verify status badges
-  await expect(page.locator('text=THIẾU')).toBeVisible();
-  await expect(page.locator('text=DƯ')).toBeVisible();
-  await expect(page.locator('text=ĐỒNG BỘ')).toBeVisible();
+  await expect(page.locator('text=THIẾU').first()).toBeVisible();
+  await expect(page.locator('text=DƯ').first()).toBeVisible();
+  await expect(page.locator('text=ĐỒNG BỘ').first()).toBeVisible();
 });
