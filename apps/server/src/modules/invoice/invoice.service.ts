@@ -134,8 +134,23 @@ export class InvoiceService {
    * In real implementation, this would fetch from database.
    */
   async getReceiptData(orderId: string): Promise<Transaction | null> {
-    // TODO: Implement database lookup
-    // For now, return null (will be implemented in T002P integration)
-    return null;
+    // Mock transaction for now — replace with real DB lookup when T002P integration is ready
+    return {
+      id: `txn_mock_${orderId}`,
+      orderId,
+      storeId: 'store_hcm',
+      storeName: 'Cháo ếch Bà Xanh',
+      storeAddress: '123 Le Loi, Q1, HCMC',
+      storeTaxCode: '0123456789',
+      items: [
+        { productName: 'Cháo ếch', quantity: 2, price: 75000n, subtotal: 150000n },
+        { productName: 'Nước mắm', quantity: 1, price: 20000n, subtotal: 20000n },
+      ],
+      total: 170000n,
+      cash: 200000n,
+      change: 30000n,
+      platform: 'POS',
+      createdAt: '2026-08-22 20:30:00',
+    };
   }
 }

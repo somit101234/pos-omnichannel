@@ -13,24 +13,18 @@ export class InvoiceController {
   constructor(private readonly invoiceService: InvoiceService) {}
 
   @Get('receipt/:orderId')
-  generateReceipt(
+  async generateReceipt(
     @Param('orderId') orderId: string,
     @Query('format') format: '58mm' | '80mm' = '58mm',
     @Query('reprint') reprint: string = 'false'
-  ): string {
-    // In real implementation, fetch transaction by orderId
-    // For now, this is a placeholder that will be implemented with T002P integration
+  ): Promise<string> {
     const formatEnum = format === '58mm' ? ReceiptFormat.W58 : ReceiptFormat.W80;
     const isReprint = reprint === 'true';
 
-    // TODO: Fetch transaction from database using orderId
-    // const tx = await this.invoiceService.getReceiptData(orderId);
-    // if (!tx) {
-    //   throw new NotFoundException(`Receipt for order ${orderId} not found`);
-    // }
-    // return this.invoiceService.generateReceipt(tx, formatEnum, isReprint);
-
-    // Placeholder return (will be removed after T002P integration)
-    return `Receipt for order ${orderId} (format: ${format}, reprint: ${isReprint})`;
+    const tx = await this.invoiceService.getReceiptData(orderId);
+    if (!tx) {
+      throw new Error(`Receipt for order ${orderId} not found`);
+    }
+    return this.invoiceService.generateReceipt(tx, formatEnum, isReprint);
   }
 }
