@@ -77,6 +77,18 @@ export class CategoriesService {
     return [...rootCategories, ...categories.filter((c) => !!c.parentId)];
   }
 
+  async findOne(id: string) {
+    const category = await this.prisma.category.findUnique({
+      where: { id },
+    });
+
+    if (!category) {
+      throw new NotFoundException(`Category ${id} not found`);
+    }
+
+    return category;
+  }
+
   async update(id: string, dto: UpdateCategoryDto) {
     const existing = await this.prisma.category.findUnique({
       where: { id },
