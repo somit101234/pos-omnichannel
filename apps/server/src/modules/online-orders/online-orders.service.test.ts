@@ -1,11 +1,28 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 import { OnlineOrdersService, OnlineOrderStatus } from './online-orders.service';
+
+// Mock PrismaService cho test
+class MockPrismaService {
+  onlineOrder = {
+    create: vi.fn(),
+    findUnique: vi.fn(),
+    findMany: vi.fn(),
+    update: vi.fn(),
+    deleteMany: vi.fn(),
+  };
+}
 
 describe('OnlineOrdersService', () => {
   let service: OnlineOrdersService;
+  let mockPrisma: MockPrismaService;
 
   beforeEach(() => {
-    service = new OnlineOrdersService();
+    mockPrisma = new MockPrismaService();
+    service = new OnlineOrdersService(mockPrisma as any);
+  });
+
+  afterEach(() => {
+    vi.clearAllMocks();
   });
 
   const BASE_TIME = new Date('2026-08-22T10:00:00Z').getTime();
@@ -13,8 +30,19 @@ describe('OnlineOrdersService', () => {
   // ===== AC1: Status flow: PENDING → PROCESSING → READY → DELIVERED =====
 
   describe('AC1 — Status flow: PENDING → PROCESSING → READY → DELIVERED', () => {
-    it('should create order with status PENDING', () => {
-      const order = service.createOrder('ORD001', 'customer1', [
+    it('should create order with status PENDING', async () => {
+      const now = new Date(BASE_TIME);
+      mockPrisma.onlineOrder.create.mockResolvedValue({
+        id: 'ORD001',
+        customerId: 'customer1',
+        items: { data: [{ productId: 'PROD1', quantity: 2 }] },
+        status: 'PENDING',
+        createdAt: now,
+        updatedAt: now,
+      });
+      mockPrisma.onlineOrder.findUnique.mockResolvedValue(null); // not found
+
+      const order = await service.createOrder('ORD001', 'customer1', [
         { productId: 'PROD1', quantity: 2 },
       ]);
       expect(order.status).toBe(OnlineOrderStatus.PENDING);
@@ -25,175 +53,548 @@ describe('OnlineOrdersService', () => {
       expect(order.items[0].quantity).toBe(2);
     });
 
-    it('should accept order and change status to PROCESSING', () => {
-      const order = service.createOrder('ORD002', 'customer2', [
+    it('should accept order and change status to PROCESSING', async () => {
+      const now = new Date(BASE_TIME);
+      // First createOrder
+      mockPrisma.onlineOrder.findUnique.mockResolvedValue(null); // not found
+      mockPrisma.onlineOrder.create.mockResolvedValue({
+        id: 'ORD002',
+        customerId: 'customer2',
+        items: { data: [{ productId: 'PROD2', quantity: 1 }] },
+        status: 'PENDING',
+        createdAt: now,
+        updatedAt: now,
+      });
+
+      const order = await service.createOrder('ORD002', 'customer2', [
         { productId: 'PROD2', quantity: 1 },
       ]);
       expect(order.status).toBe(OnlineOrderStatus.PENDING);
 
-      service.acceptOrder('ORD002');
-      expect(order.status).toBe(OnlineOrderStatus.PROCESSING);
+      // Then acceptOrder
+      mockPrisma.onlineOrder.findUnique.mockResolvedValue({
+        id: 'ORD002',
+        customerId: 'customer2',
+        items: { data: [{ productId: 'PROD2', quantity: 1 }] },
+        status: 'PENDING',
+        createdAt: now,
+        updatedAt: now,
+      });
+      mockPrisma.onlineOrder.update.mockResolvedValue({
+        id: 'ORD002',
+        customerId: 'customer2',
+        items: { data: [{ productId: 'PROD2', quantity: 1 }] },
+        status: 'PROCESSING',
+        createdAt: now,
+        updatedAt: new Date(BASE_TIME + 1000),
+      });
+
+      const accepted = await service.acceptOrder('ORD002');
+      expect(accepted.status).toBe(OnlineOrderStatus.PROCESSING);
     });
 
-    it('should set status to READY after processing', () => {
-      const order = service.createOrder('ORD003', 'customer3', [
+    it('should set status to READY after processing', async () => {
+      const now = new Date(BASE_TIME);
+      // createOrder
+      mockPrisma.onlineOrder.findUnique.mockResolvedValue(null);
+      mockPrisma.onlineOrder.create.mockResolvedValue({
+        id: 'ORD003',
+        customerId: 'customer3',
+        items: { data: [{ productId: 'PROD3', quantity: 3 }] },
+        status: 'PENDING',
+        createdAt: now,
+        updatedAt: now,
+      });
+
+      await service.createOrder('ORD003', 'customer3', [
         { productId: 'PROD3', quantity: 3 },
       ]);
 
-      service.acceptOrder('ORD003');
-      expect(order.status).toBe(OnlineOrderStatus.PROCESSING);
+      // acceptOrder
+      mockPrisma.onlineOrder.findUnique.mockResolvedValue({
+        id: 'ORD003',
+        customerId: 'customer3',
+        items: { data: [{ productId: 'PROD3', quantity: 3 }] },
+        status: 'PENDING',
+        createdAt: now,
+        updatedAt: now,
+      });
+      mockPrisma.onlineOrder.update.mockResolvedValue({
+        id: 'ORD003',
+        customerId: 'customer3',
+        items: { data: [{ productId: 'PROD3', quantity: 3 }] },
+        status: 'PROCESSING',
+        createdAt: now,
+        updatedAt: new Date(BASE_TIME + 1000),
+      });
 
-      service.prepareOrder('ORD003');
-      expect(order.status).toBe(OnlineOrderStatus.READY);
+      await service.acceptOrder('ORD003');
+
+      // prepareOrder
+      mockPrisma.onlineOrder.findUnique.mockResolvedValue({
+        id: 'ORD003',
+        customerId: 'customer3',
+        items: { data: [{ productId: 'PROD3', quantity: 3 }] },
+        status: 'PROCESSING',
+        createdAt: now,
+        updatedAt: new Date(BASE_TIME + 1000),
+      });
+      mockPrisma.onlineOrder.update.mockResolvedValue({
+        id: 'ORD003',
+        customerId: 'customer3',
+        items: { data: [{ productId: 'PROD3', quantity: 3 }] },
+        status: 'READY',
+        createdAt: now,
+        updatedAt: new Date(BASE_TIME + 2000),
+      });
+
+      const prepared = await service.prepareOrder('ORD003');
+      expect(prepared.status).toBe(OnlineOrderStatus.READY);
     });
 
-    it('should deliver order and set status to DELIVERED', () => {
-      const order = service.createOrder('ORD004', 'customer4', [
+    it('should deliver order and set status to DELIVERED', async () => {
+      const now = new Date(BASE_TIME);
+      // createOrder
+      mockPrisma.onlineOrder.findUnique.mockResolvedValue(null);
+      mockPrisma.onlineOrder.create.mockResolvedValue({
+        id: 'ORD004',
+        customerId: 'customer4',
+        items: { data: [{ productId: 'PROD4', quantity: 1 }] },
+        status: 'PENDING',
+        createdAt: now,
+        updatedAt: now,
+      });
+
+      await service.createOrder('ORD004', 'customer4', [
         { productId: 'PROD4', quantity: 1 },
       ]);
+      // acceptOrder
+      mockPrisma.onlineOrder.findUnique.mockResolvedValue({
+        id: 'ORD004',
+        customerId: 'customer4',
+        items: { data: [{ productId: 'PROD4', quantity: 1 }] },
+        status: 'PENDING',
+        createdAt: now,
+        updatedAt: now,
+      });
+      mockPrisma.onlineOrder.update.mockResolvedValue({
+        id: 'ORD004',
+        customerId: 'customer4',
+        items: { data: [{ productId: 'PROD4', quantity: 1 }] },
+        status: 'PROCESSING',
+        createdAt: now,
+        updatedAt: new Date(BASE_TIME + 1000),
+      });
+      await service.acceptOrder('ORD004');
+      // prepareOrder
+      mockPrisma.onlineOrder.findUnique.mockResolvedValue({
+        id: 'ORD004',
+        customerId: 'customer4',
+        items: { data: [{ productId: 'PROD4', quantity: 1 }] },
+        status: 'PROCESSING',
+        createdAt: now,
+        updatedAt: new Date(BASE_TIME + 1000),
+      });
+      mockPrisma.onlineOrder.update.mockResolvedValue({
+        id: 'ORD004',
+        customerId: 'customer4',
+        items: { data: [{ productId: 'PROD4', quantity: 1 }] },
+        status: 'READY',
+        createdAt: now,
+        updatedAt: new Date(BASE_TIME + 2000),
+      });
+      await service.prepareOrder('ORD004');
+      // deliverOrder
+      mockPrisma.onlineOrder.findUnique.mockResolvedValue({
+        id: 'ORD004',
+        customerId: 'customer4',
+        items: { data: [{ productId: 'PROD4', quantity: 1 }] },
+        status: 'READY',
+        createdAt: now,
+        updatedAt: new Date(BASE_TIME + 2000),
+      });
+      mockPrisma.onlineOrder.update.mockResolvedValue({
+        id: 'ORD004',
+        customerId: 'customer4',
+        items: { data: [{ productId: 'PROD4', quantity: 1 }] },
+        status: 'DELIVERED',
+        createdAt: now,
+        updatedAt: new Date(BASE_TIME + 3000),
+      });
 
-      service.acceptOrder('ORD004');
-      service.prepareOrder('ORD004');
-      expect(order.status).toBe(OnlineOrderStatus.READY);
-
-      service.deliverOrder('ORD004');
-      expect(order.status).toBe(OnlineOrderStatus.DELIVERED);
+      const delivered = await service.deliverOrder('ORD004');
+      expect(delivered.status).toBe(OnlineOrderStatus.DELIVERED);
     });
   });
 
   // ===== AC2: Reject order → status REJECTED =====
 
   describe('AC2 — Reject order → status REJECTED', () => {
-    it('should reject order and change status to REJECTED', () => {
-      const order = service.createOrder('ORD005', 'customer5', [
+    it('should reject order and change status to REJECTED', async () => {
+      const now = new Date(BASE_TIME);
+      // createOrder
+      mockPrisma.onlineOrder.findUnique.mockResolvedValue(null);
+      mockPrisma.onlineOrder.create.mockResolvedValue({
+        id: 'ORD005',
+        customerId: 'customer5',
+        items: { data: [{ productId: 'PROD5', quantity: 1 }] },
+        status: 'PENDING',
+        createdAt: now,
+        updatedAt: now,
+      });
+
+      const order = await service.createOrder('ORD005', 'customer5', [
         { productId: 'PROD5', quantity: 1 },
       ]);
       expect(order.status).toBe(OnlineOrderStatus.PENDING);
 
-      service.rejectOrder('ORD005', 'Out of stock');
-      expect(order.status).toBe(OnlineOrderStatus.REJECTED);
+      // rejectOrder
+      mockPrisma.onlineOrder.findUnique.mockResolvedValue({
+        id: 'ORD005',
+        customerId: 'customer5',
+        items: { data: [{ productId: 'PROD5', quantity: 1 }] },
+        status: 'PENDING',
+        createdAt: now,
+        updatedAt: now,
+      });
+      mockPrisma.onlineOrder.update.mockResolvedValue({
+        id: 'ORD005',
+        customerId: 'customer5',
+        items: { data: [{ productId: 'PROD5', quantity: 1 }] },
+        status: 'REJECTED',
+        rejectionReason: 'Out of stock',
+        createdAt: now,
+        updatedAt: new Date(BASE_TIME + 1000),
+      });
+
+      const rejected = await service.rejectOrder('ORD005', 'Out of stock');
+      expect(rejected.status).toBe(OnlineOrderStatus.REJECTED);
+      expect(rejected.rejectionReason).toBe('Out of stock');
     });
 
-    it('should reject pending order with reason', () => {
-      const order = service.createOrder('ORD006', 'customer6', [
-        { productId: 'PROD6', quantity: 1 },
-      ]);
+    it('should not accept order after it has been rejected', async () => {
+      const now = new Date(BASE_TIME);
+      // createOrder
+      mockPrisma.onlineOrder.findUnique.mockResolvedValue(null);
+      mockPrisma.onlineOrder.create.mockResolvedValue({
+        id: 'ORD007',
+        customerId: 'customer7',
+        items: { data: [{ productId: 'PROD7', quantity: 1 }] },
+        status: 'PENDING',
+        createdAt: now,
+        updatedAt: now,
+      });
 
-      service.rejectOrder('ORD006', 'Customer cancelled');
-      expect(order.status).toBe(OnlineOrderStatus.REJECTED);
-      expect(order.rejectionReason).toBe('Customer cancelled');
-    });
-
-    it('should not accept order after it has been rejected', () => {
-      const order = service.createOrder('ORD007', 'customer7', [
+      await service.createOrder('ORD007', 'customer7', [
         { productId: 'PROD7', quantity: 1 },
       ]);
 
-      service.rejectOrder('ORD007', 'Reason 1');
+      // rejectOrder
+      mockPrisma.onlineOrder.findUnique.mockResolvedValue({
+        id: 'ORD007',
+        customerId: 'customer7',
+        items: { data: [{ productId: 'PROD7', quantity: 1 }] },
+        status: 'PENDING',
+        createdAt: now,
+        updatedAt: now,
+      });
+      mockPrisma.onlineOrder.update.mockResolvedValue({
+        id: 'ORD007',
+        customerId: 'customer7',
+        items: { data: [{ productId: 'PROD7', quantity: 1 }] },
+        status: 'REJECTED',
+        rejectionReason: 'Reason 1',
+        createdAt: now,
+        updatedAt: new Date(BASE_TIME + 1000),
+      });
 
-      expect(() => service.acceptOrder('ORD007')).toThrow('Cannot accept rejected order');
-      expect(order.status).toBe(OnlineOrderStatus.REJECTED);
+      await service.rejectOrder('ORD007', 'Reason 1');
+
+      // acceptOrder should fail
+      mockPrisma.onlineOrder.findUnique.mockResolvedValue({
+        id: 'ORD007',
+        customerId: 'customer7',
+        items: { data: [{ productId: 'PROD7', quantity: 1 }] },
+        status: 'REJECTED',
+        rejectionReason: 'Reason 1',
+        createdAt: now,
+        updatedAt: new Date(BASE_TIME + 1000),
+      });
+
+      await expect(service.acceptOrder('ORD007')).rejects.toThrow(
+        'Cannot accept rejected order',
+      );
     });
   });
 
   // ===== AC3: Alert when order pending > 15min → RED status =====
 
   describe('AC3 — Alert when order pending > 15min → RED status', () => {
-    it('should return isOverdue = true for order pending > 15min', () => {
-      const oldOrder = service.createOrder('ORD_OVERDUE', 'customer_old', [
-        { productId: 'PROD_OVERDUE', quantity: 1 },
-      ]);
+    it('should return isOverdue = true for order pending > 15min', async () => {
+      const now = new Date(BASE_TIME);
+      const overdueTime = new Date(BASE_TIME - 16 * 60 * 1000);
+      mockPrisma.onlineOrder.findUnique.mockResolvedValue({
+        id: 'ORD_OVERDUE',
+        customerId: 'customer_old',
+        items: { data: [{ productId: 'PROD_OVERDUE', quantity: 1 }] },
+        status: 'PENDING',
+        createdAt: overdueTime,
+        updatedAt: overdueTime,
+      });
 
-      // Set order createdAt to 16 minutes ago
-      oldOrder.createdAt = new Date(BASE_TIME - 16 * 60 * 1000);
-
-      expect(oldOrder.status).toBe(OnlineOrderStatus.PENDING);
-      expect(service.isOrderOverdue('ORD_OVERDUE', new Date(BASE_TIME + 16 * 60 * 1000))).toBe(true);
+      const isOverdue = await service.isOrderOverdue(
+        'ORD_OVERDUE',
+        new Date(BASE_TIME + 16 * 60 * 1000),
+      );
+      expect(isOverdue).toBe(true);
     });
 
-    it('should return isOverdue = false for order pending <= 15min', () => {
-      const order = service.createOrder('ORD_UNDERDUE', 'customer_under', [
-        { productId: 'PROD_UNDERDUE', quantity: 1 },
-      ]);
+    it('should return isOverdue = false for order pending <= 15min', async () => {
+      const now = new Date(BASE_TIME);
+      mockPrisma.onlineOrder.findUnique.mockResolvedValue({
+        id: 'ORD_UNDERDUE',
+        customerId: 'customer_under',
+        items: { data: [{ productId: 'PROD_UNDERDUE', quantity: 1 }] },
+        status: 'PENDING',
+        createdAt: now,
+        updatedAt: now,
+      });
 
-      // Order just created, less than 15min
-      expect(service.isOrderOverdue('ORD_UNDERDUE', new Date(BASE_TIME))).toBe(false);
+      const isOverdue = await service.isOrderOverdue('ORD_UNDERDUE', now);
+      expect(isOverdue).toBe(false);
     });
 
-    it('should not alert if order moved to PROCESSING before 15min', () => {
-      const order = service.createOrder('ORD_NOT_OVERDUE', 'customer_n', [
+    it('should not alert if order moved to PROCESSING before 15min', async () => {
+      const now = new Date(BASE_TIME);
+      // createOrder
+      mockPrisma.onlineOrder.findUnique.mockResolvedValue(null);
+      mockPrisma.onlineOrder.create.mockResolvedValue({
+        id: 'ORD_NOT_OVERDUE',
+        customerId: 'customer_n',
+        items: { data: [{ productId: 'PROD_N', quantity: 1 }] },
+        status: 'PENDING',
+        createdAt: now,
+        updatedAt: now,
+      });
+
+      await service.createOrder('ORD_NOT_OVERDUE', 'customer_n', [
         { productId: 'PROD_N', quantity: 1 },
       ]);
+      // acceptOrder
+      mockPrisma.onlineOrder.findUnique.mockResolvedValue({
+        id: 'ORD_NOT_OVERDUE',
+        customerId: 'customer_n',
+        items: { data: [{ productId: 'PROD_N', quantity: 1 }] },
+        status: 'PENDING',
+        createdAt: now,
+        updatedAt: now,
+      });
+      mockPrisma.onlineOrder.update.mockResolvedValue({
+        id: 'ORD_NOT_OVERDUE',
+        customerId: 'customer_n',
+        items: { data: [{ productId: 'PROD_N', quantity: 1 }] },
+        status: 'PROCESSING',
+        createdAt: now,
+        updatedAt: new Date(BASE_TIME + 1000),
+      });
 
-      // Move to PROCESSING at 10min
-      service.acceptOrder('ORD_NOT_OVERDUE');
-      expect(order.status).toBe(OnlineOrderStatus.PROCESSING);
+      await service.acceptOrder('ORD_NOT_OVERDUE');
 
-      // Check at 26min total (16min since creation) — but already PROCESSING
-      expect(service.isOrderOverdue('ORD_NOT_OVERDUE', new Date(BASE_TIME + 26 * 60 * 1000))).toBe(false);
+      // isOrderOverdue
+      mockPrisma.onlineOrder.findUnique.mockResolvedValue({
+        id: 'ORD_NOT_OVERDUE',
+        customerId: 'customer_n',
+        items: { data: [{ productId: 'PROD_N', quantity: 1 }] },
+        status: 'PROCESSING',
+        createdAt: now,
+        updatedAt: new Date(BASE_TIME + 1000),
+      });
+
+      const isOverdue = await service.isOrderOverdue(
+        'ORD_NOT_OVERDUE',
+        new Date(BASE_TIME + 26 * 60 * 1000),
+      );
+      expect(isOverdue).toBe(false);
     });
   });
 
   // ===== Negative / Boundary / Edge cases =====
 
   describe('Negative and boundary cases', () => {
-    it('should throw error when accepting non-existent order', () => {
-      expect(() => service.acceptOrder('NON_EXISTENT')).toThrow('Order not found');
+    it('should throw error when accepting non-existent order', async () => {
+      mockPrisma.onlineOrder.findUnique.mockResolvedValue(null);
+
+      await expect(service.acceptOrder('NON_EXISTENT')).rejects.toThrow(
+        'Order not found',
+      );
     });
 
-    it('should throw error when rejecting non-existent order', () => {
-      expect(() => service.rejectOrder('NON_EXISTENT', 'reason')).toThrow('Order not found');
+    it('should throw error when rejecting non-existent order', async () => {
+      mockPrisma.onlineOrder.findUnique.mockResolvedValue(null);
+
+      await expect(service.rejectOrder('NON_EXISTENT', 'reason')).rejects.toThrow(
+        'Order not found',
+      );
     });
 
-    it('should throw error when preparing non-existent order', () => {
-      expect(() => service.prepareOrder('NON_EXISTENT')).toThrow('Order not found');
+    it('should throw error when preparing non-existent order', async () => {
+      mockPrisma.onlineOrder.findUnique.mockResolvedValue(null);
+
+      await expect(service.prepareOrder('NON_EXISTENT')).rejects.toThrow(
+        'Order not found',
+      );
     });
 
-    it('should throw error when delivering non-existent order', () => {
-      expect(() => service.deliverOrder('NON_EXISTENT')).toThrow('Order not found');
+    it('should throw error when delivering non-existent order', async () => {
+      mockPrisma.onlineOrder.findUnique.mockResolvedValue(null);
+
+      await expect(service.deliverOrder('NON_EXISTENT')).rejects.toThrow(
+        'Order not found',
+      );
     });
 
-    it('should not accept order that is already PROCESSING', () => {
-      const order = service.createOrder('ORD_DUP_ACPT', 'customer_dup', [
+    it('should not accept order that is already PROCESSING', async () => {
+      const now = new Date(BASE_TIME);
+      // createOrder
+      mockPrisma.onlineOrder.findUnique.mockResolvedValue(null);
+      mockPrisma.onlineOrder.create.mockResolvedValue({
+        id: 'ORD_DUP_ACPT',
+        customerId: 'customer_dup',
+        items: { data: [{ productId: 'PROD_DUP', quantity: 1 }] },
+        status: 'PENDING',
+        createdAt: now,
+        updatedAt: now,
+      });
+
+      await service.createOrder('ORD_DUP_ACPT', 'customer_dup', [
         { productId: 'PROD_DUP', quantity: 1 },
       ]);
-      service.acceptOrder('ORD_DUP_ACPT');
+      // acceptOrder
+      mockPrisma.onlineOrder.findUnique.mockResolvedValue({
+        id: 'ORD_DUP_ACPT',
+        customerId: 'customer_dup',
+        items: { data: [{ productId: 'PROD_DUP', quantity: 1 }] },
+        status: 'PENDING',
+        createdAt: now,
+        updatedAt: now,
+      });
+      mockPrisma.onlineOrder.update.mockResolvedValue({
+        id: 'ORD_DUP_ACPT',
+        customerId: 'customer_dup',
+        items: { data: [{ productId: 'PROD_DUP', quantity: 1 }] },
+        status: 'PROCESSING',
+        createdAt: now,
+        updatedAt: new Date(BASE_TIME + 1000),
+      });
 
-      expect(() => service.acceptOrder('ORD_DUP_ACPT')).toThrow(
+      await service.acceptOrder('ORD_DUP_ACPT');
+      // second acceptOrder
+      mockPrisma.onlineOrder.findUnique.mockResolvedValue({
+        id: 'ORD_DUP_ACPT',
+        customerId: 'customer_dup',
+        items: { data: [{ productId: 'PROD_DUP', quantity: 1 }] },
+        status: 'PROCESSING',
+        createdAt: now,
+        updatedAt: new Date(BASE_TIME + 1000),
+      });
+
+      await expect(service.acceptOrder('ORD_DUP_ACPT')).rejects.toThrow(
         'Order is already PROCESSING',
       );
-      expect(order.status).toBe(OnlineOrderStatus.PROCESSING);
     });
 
-    it('should not prepare order that is not PROCESSING', () => {
-      const order = service.createOrder('ORD_NOT_PREP', 'customer_np', [
+    it('should not prepare order that is not PROCESSING', async () => {
+      const now = new Date(BASE_TIME);
+      // createOrder
+      mockPrisma.onlineOrder.findUnique.mockResolvedValue(null);
+      mockPrisma.onlineOrder.create.mockResolvedValue({
+        id: 'ORD_NOT_PREP',
+        customerId: 'customer_np',
+        items: { data: [{ productId: 'PROD_NP', quantity: 1 }] },
+        status: 'PENDING',
+        createdAt: now,
+        updatedAt: now,
+      });
+
+      await service.createOrder('ORD_NOT_PREP', 'customer_np', [
         { productId: 'PROD_NP', quantity: 1 },
       ]);
-      // Order still PENDING
 
-      expect(() => service.prepareOrder('ORD_NOT_PREP')).toThrow(
+      // prepareOrder
+      mockPrisma.onlineOrder.findUnique.mockResolvedValue({
+        id: 'ORD_NOT_PREP',
+        customerId: 'customer_np',
+        items: { data: [{ productId: 'PROD_NP', quantity: 1 }] },
+        status: 'PENDING',
+        createdAt: now,
+        updatedAt: now,
+      });
+
+      await expect(service.prepareOrder('ORD_NOT_PREP')).rejects.toThrow(
         'Order must be PROCESSING before preparing',
       );
-      expect(order.status).toBe(OnlineOrderStatus.PENDING);
     });
 
-    it('should not deliver order that is not READY', () => {
-      const order = service.createOrder('ORD_NOT_DLV', 'customer_nd', [
+    it('should not deliver order that is not READY', async () => {
+      const now = new Date(BASE_TIME);
+      // createOrder
+      mockPrisma.onlineOrder.findUnique.mockResolvedValue(null);
+      mockPrisma.onlineOrder.create.mockResolvedValue({
+        id: 'ORD_NOT_DLV',
+        customerId: 'customer_nd',
+        items: { data: [{ productId: 'PROD_ND', quantity: 1 }] },
+        status: 'PENDING',
+        createdAt: now,
+        updatedAt: now,
+      });
+
+      await service.createOrder('ORD_NOT_DLV', 'customer_nd', [
         { productId: 'PROD_ND', quantity: 1 },
       ]);
-      // Order still PENDING
 
-      expect(() => service.deliverOrder('ORD_NOT_DLV')).toThrow(
+      // deliverOrder
+      mockPrisma.onlineOrder.findUnique.mockResolvedValue({
+        id: 'ORD_NOT_DLV',
+        customerId: 'customer_nd',
+        items: { data: [{ productId: 'PROD_ND', quantity: 1 }] },
+        status: 'PENDING',
+        createdAt: now,
+        updatedAt: now,
+      });
+
+      await expect(service.deliverOrder('ORD_NOT_DLV')).rejects.toThrow(
         'Order must be READY before delivering',
       );
-      expect(order.status).toBe(OnlineOrderStatus.PENDING);
     });
 
-    it('should allow multiple orders with same customer', () => {
-      const order1 = service.createOrder('ORD_MULTI1', 'same_customer', [
+    it('should allow multiple orders with same customer', async () => {
+      const now = new Date(BASE_TIME);
+      // createOrder 1
+      mockPrisma.onlineOrder.findUnique.mockResolvedValue(null);
+      mockPrisma.onlineOrder.create.mockResolvedValue({
+        id: 'ORD_MULTI1',
+        customerId: 'same_customer',
+        items: { data: [{ productId: 'PROD_M1', quantity: 1 }] },
+        status: 'PENDING',
+        createdAt: now,
+        updatedAt: now,
+      });
+
+      const order1 = await service.createOrder('ORD_MULTI1', 'same_customer', [
         { productId: 'PROD_M1', quantity: 1 },
       ]);
-      const order2 = service.createOrder('ORD_MULTI2', 'same_customer', [
+      // createOrder 2
+      mockPrisma.onlineOrder.findUnique.mockResolvedValue(null);
+      mockPrisma.onlineOrder.create.mockResolvedValue({
+        id: 'ORD_MULTI2',
+        customerId: 'same_customer',
+        items: { data: [{ productId: 'PROD_M2', quantity: 2 }] },
+        status: 'PENDING',
+        createdAt: now,
+        updatedAt: now,
+      });
+
+      const order2 = await service.createOrder('ORD_MULTI2', 'same_customer', [
         { productId: 'PROD_M2', quantity: 2 },
       ]);
 

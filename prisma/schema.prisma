@@ -43,11 +43,10 @@ enum Platform {
 
 enum OnlineOrderStatus {
   PENDING
-  CONFIRMED
   PROCESSING
-  SHIPPED
+  READY
   DELIVERED
-  CANCELLED
+  REJECTED
 }
 
 enum PurchaseOrderStatus {
@@ -275,15 +274,18 @@ model Shift {
 }
 
 model OnlineOrder {
-  id             String           @id @default(cuid())
-  storeId        String
-  store          Store            @relation("OOStore", fields: [storeId], references: [id])
-  platform       Platform
-  orderNo        String           @unique
-  status         OnlineOrderStatus @default(PENDING)
-  platformFee    BigInt?
-  items          Json?
-  createdAt      DateTime         @default(now())
+  id               String            @id @default(cuid())
+  storeId          String
+  store            Store             @relation("OOStore", fields: [storeId], references: [id])
+  platform         Platform
+  orderNo          String            @unique
+  customerId       String
+  status           OnlineOrderStatus @default(PENDING)
+  platformFee      BigInt?
+  items            Json?
+  rejectionReason  String?
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
 
   @@index([storeId, createdAt])
 }

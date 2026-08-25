@@ -1,5 +1,6 @@
-// Online Orders service — thuần, không dùng Nest decorators cho dễ test
+// Online Orders service — Prisma integration
 import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
+import { PrismaService } from '../../prisma/prisma.service';
 
 export enum OnlineOrderStatus {
   PENDING = 'PENDING',
@@ -24,40 +25,43 @@ export interface OnlineOrder {
   rejectionReason?: string;
 }
 
-const ORDERS: Record<string, OnlineOrder> = {};
 const ACCEPT_THRESHOLD_MS = 15 * 60 * 1000; // 15 minutes
 
 @Injectable()
 export class OnlineOrdersService {
-  createOrder(id: string, customerId: string, items: OrderItem[]): OnlineOrder {
-    if (ORDERS[id]) {
+  constructor(private prisma: PrismaService) {}
+
+  async createOrder(id: string, customerId: string, items: OrderItem[]): Promise<OnlineOrder> {
+    const existing = await this.prisma.onlineOrder.findUnique({ where: { id } });
+    if (existing) {
       throw new ConflictException(`Order ${id} already exists`);
     }
 
     const now = new Date();
-    const order: OnlineOrder = {
-      id,
-      customerId,
-      items: items.slice(), // deep copy by value
-      status: OnlineOrderStatus.PENDING,
-      createdAt: now,
-      updatedAt: now,
-    };
+    const order = await this.prisma.onlineOrder.create({
+      data: {
+        id,
+        customerId,
+        items: { data: items },
+        status: OnlineOrderStatus.PENDING,
+        createdAt: now,
+        updatedAt: now,
+      },
+    });
 
-    ORDERS[id] = order;
-    return order;
+    return this._mapToEntity(order);
   }
 
-  getOrder(id: string): OnlineOrder {
-    const order = ORDERS[id];
+  async getOrder(id: string): Promise<OnlineOrder> {
+    const order = await this.prisma.onlineOrder.findUnique({ where: { id } });
     if (!order) {
       throw new NotFoundException('Order not found');
     }
-    return order;
+    return this._mapToEntity(order);
   }
 
-  acceptOrder(id: string): OnlineOrder {
-    const order = this.getOrder(id);
+  async acceptOrder(id: string): Promise<OnlineOrder> {
+    const order = await this.getOrder(id);
     if (order.status === OnlineOrderStatus.REJECTED) {
       throw new ConflictException('Cannot accept rejected order');
     }
@@ -65,43 +69,67 @@ export class OnlineOrdersService {
       throw new ConflictException('Order is already PROCESSING');
     }
 
-    order.status = OnlineOrderStatus.PROCESSING;
-    order.updatedAt = new Date();
-    return order;
+    const updated = await this.prisma.onlineOrder.update({
+      where: { id },
+      data: {
+        status: OnlineOrderStatus.PROCESSING,
+        updatedAt: new Date(),
+      },
+    });
+    return this._mapToEntity(updated);
   }
 
-  rejectOrder(id: string, reason: string): OnlineOrder {
-    const order = this.getOrder(id);
-    order.status = OnlineOrderStatus.REJECTED;
-    order.rejectionReason = reason;
-    order.updatedAt = new Date();
-    return order;
+  async rejectOrder(id: string, reason: string): Promise<OnlineOrder> {
+    const order = await this.getOrder(id);
+
+    const updated = await this.prisma.onlineOrder.update({
+      where: { id },
+      data: {
+        status: OnlineOrderStatus.REJECTED,
+        rejectionReason: reason,
+        updatedAt: new Date(),
+      },
+    });
+    return this._mapToEntity(updated);
   }
 
-  prepareOrder(id: string): OnlineOrder {
-    const order = this.getOrder(id);
+  async prepareOrder(id: string): Promise<OnlineOrder> {
+    const order = await this.getOrder(id);
     if (order.status !== OnlineOrderStatus.PROCESSING) {
       throw new ConflictException('Order must be PROCESSING before preparing');
     }
 
-    order.status = OnlineOrderStatus.READY;
-    order.updatedAt = new Date();
-    return order;
+    const updated = await this.prisma.onlineOrder.update({
+      where: { id },
+      data: {
+        status: OnlineOrderStatus.READY,
+        updatedAt: new Date(),
+      },
+    });
+    return this._mapToEntity(updated);
   }
 
-  deliverOrder(id: string): OnlineOrder {
-    const order = this.getOrder(id);
+  async deliverOrder(id: string): Promise<OnlineOrder> {
+    const order = await this.getOrder(id);
     if (order.status !== OnlineOrderStatus.READY) {
       throw new ConflictException('Order must be READY before delivering');
     }
 
-    order.status = OnlineOrderStatus.DELIVERED;
-    order.updatedAt = new Date();
-    return order;
+    const updated = await this.prisma.onlineOrder.update({
+      where: { id },
+      data: {
+        status: OnlineOrderStatus.DELIVERED,
+        updatedAt: new Date(),
+      },
+    });
+    return this._mapToEntity(updated);
   }
 
-  isOrderOverdue(id: string, now: Date = new Date()): boolean {
-    const order = this.getOrder(id);
+  async isOrderOverdue(id: string, now: Date = new Date()): Promise<boolean> {
+    const order = await this.prisma.onlineOrder.findUnique({ where: { id } });
+    if (!order) {
+      throw new NotFoundException('Order not found');
+    }
     if (order.status !== OnlineOrderStatus.PENDING) {
       return false;
     }
@@ -110,19 +138,32 @@ export class OnlineOrdersService {
     return age > ACCEPT_THRESHOLD_MS;
   }
 
-  getAllOrders(): OnlineOrder[] {
-    return Object.values(ORDERS);
+  async getAllOrders(): Promise<OnlineOrder[]> {
+    const orders = await this.prisma.onlineOrder.findMany();
+    return orders.map((o: any) => this._mapToEntity(o));
   }
 
-  getPendingOrders(): OnlineOrder[] {
-    return Object.values(ORDERS).filter(
-      (o) => o.status === OnlineOrderStatus.PENDING,
-    );
+  async getPendingOrders(): Promise<OnlineOrder[]> {
+    const orders = await this.prisma.onlineOrder.findMany({
+      where: { status: OnlineOrderStatus.PENDING },
+    });
+    return orders.map((o: any) => this._mapToEntity(o));
   }
 
-  reset(): void {
-    for (const key of Object.keys(ORDERS)) {
-      delete ORDERS[key];
-    }
+  async reset(): Promise<void> {
+    await this.prisma.onlineOrder.deleteMany();
+  }
+
+  // Helper to map Prisma model to domain entity
+  private _mapToEntity(order: any): OnlineOrder {
+    return {
+      id: order.id,
+      customerId: order.customerId,
+      items: order.items?.data || [],
+      status: order.status as OnlineOrderStatus,
+      createdAt: order.createdAt,
+      updatedAt: order.updatedAt,
+      rejectionReason: order.rejectionReason ?? undefined,
+    };
   }
 }
