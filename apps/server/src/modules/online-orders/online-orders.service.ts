@@ -119,4 +119,10 @@ export class OnlineOrdersService {
       (o) => o.status === OnlineOrderStatus.PENDING,
     );
   }
+
+  reset(): void {
+    for (const key of Object.keys(ORDERS)) {
+      delete ORDERS[key];
+    }
+  }
 }
