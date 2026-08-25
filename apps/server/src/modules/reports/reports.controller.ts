@@ -58,12 +58,12 @@ export class ReportsController {
   // ── Dashboard KPIs ──────────────────────────────────────────────────────
 
   @Get('dashboard/:storeId')
-  getDashboard(@Param('storeId') storeId: string): DashboardResponse {
-    const kpis = this.reportsService.getDashboardKpis(storeId);
+  async getDashboard(@Param('storeId') storeId: string): Promise<DashboardResponse> {
+    const kpis = await this.reportsService.getDashboardKpis(storeId);
     return {
       todayRevenue: kpis.todayRevenue.toString(),
       orderCount: kpis.orderCount,
-      topProducts: kpis.topProducts.map((p) => ({
+      topProducts: kpis.topProducts.map((p: { productId: string; productName: string; quantity: number; revenue: bigint }) => ({
         productId: p.productId,
         productName: p.productName,
         quantity: p.quantity,
@@ -75,12 +75,12 @@ export class ReportsController {
   // ── Revenue Report ──────────────────────────────────────────────────────
 
   @Get('revenue/:storeId')
-  getRevenueReport(
+  async getRevenueReport(
     @Param('storeId') storeId: string,
     @Query('start') startDateStr?: string,
     @Query('end') endDateStr?: string,
     @Query('period') period?: 'day' | 'week' | 'month'
-  ): RevenueReportResponse {
+  ): Promise<RevenueReportResponse> {
     const startDate = startDateStr ? new Date(startDateStr) : new Date();
     const endDate = endDateStr
       ? new Date(endDateStr)
@@ -94,7 +94,7 @@ export class ReportsController {
       else period = 'month';
     }
 
-    const report = this.reportsService.getRevenueReport(storeId, {
+    const report = await this.reportsService.getRevenueReport(storeId, {
       startDate,
       endDate,
       period,
@@ -113,17 +113,17 @@ export class ReportsController {
   // ── Profit Report ───────────────────────────────────────────────────────
 
   @Get('profit/:storeId')
-  getProfitReport(
+  async getProfitReport(
     @Param('storeId') storeId: string,
     @Query('start') startDateStr?: string,
     @Query('end') endDateStr?: string
-  ): ProfitReportResponse {
+  ): Promise<ProfitReportResponse> {
     const startDate = startDateStr ? new Date(startDateStr) : new Date();
     const endDate = endDateStr
       ? new Date(endDateStr)
       : new Date(startDate.getTime() + 24 * 60 * 60 * 1000 - 1);
 
-    const report = this.reportsService.getProfitReport(storeId, {
+    const report = await this.reportsService.getProfitReport(storeId, {
       startDate,
       endDate,
       period: 'day', // Default to day for profit report
@@ -140,7 +140,7 @@ export class ReportsController {
   // ── Transaction Creation (for testing) ───────────────────────────────────
 
   @Post('transactions')
-  createTransaction(@Body() dto: CreateTransactionDto): { id: string } {
+  async createTransaction(@Body() dto: CreateTransactionDto): Promise<{ id: string }> {
     const transactionInput: TransactionInput = {
       storeId: dto.storeId,
       total: BigInt(dto.total),
@@ -151,24 +151,24 @@ export class ReportsController {
         price: BigInt(item.price),
       })),
     };
-    const id = this.reportsService.createTransaction(transactionInput);
+    const id = await this.reportsService.createTransaction(transactionInput);
     return { id };
   }
 
   // ── Excel Export ────────────────────────────────────────────────────────
 
   @Get('export/revenue/:storeId')
-  exportRevenueExcel(
+  async exportRevenueExcel(
     @Param('storeId') storeId: string,
     @Query('start') startDateStr?: string,
     @Query('end') endDateStr?: string
-  ) {
+  ): Promise<{ filename: string; data: string }> {
     const startDate = startDateStr ? new Date(startDateStr) : new Date();
     const endDate = endDateStr
       ? new Date(endDateStr)
       : new Date(startDate.getTime() + 24 * 60 * 60 * 1000 - 1);
 
-    const buffer = this.reportsService.exportRevenueToExcel(storeId, {
+    const buffer = await this.reportsService.exportRevenueToExcel(storeId, {
       startDate,
       endDate,
       period: 'day',
@@ -181,17 +181,17 @@ export class ReportsController {
   }
 
   @Get('export/profit/:storeId')
-  exportProfitExcel(
+  async exportProfitExcel(
     @Param('storeId') storeId: string,
     @Query('start') startDateStr?: string,
     @Query('end') endDateStr?: string
-  ) {
+  ): Promise<{ filename: string; data: string }> {
     const startDate = startDateStr ? new Date(startDateStr) : new Date();
     const endDate = endDateStr
       ? new Date(endDateStr)
       : new Date(startDate.getTime() + 24 * 60 * 60 * 1000 - 1);
 
-    const buffer = this.reportsService.exportProfitToExcel(storeId, {
+    const buffer = await this.reportsService.exportProfitToExcel(storeId, {
       startDate,
       endDate,
       period: 'day',

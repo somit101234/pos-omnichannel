@@ -1,46 +1,75 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { ReportsService } from './reports.service';
 
-/** Create a transaction with a specific date. */
-function createTransactionWithDate(
-  svc: ReportsService,
-  storeId: string,
-  total: bigint,
-  date: Date,
-  platformFeeRate: number = 0,
-  items?: { productId: string; quantity: number; price: bigint }[]
-): string {
-  const txId = `tx_${date.getTime()}_${Math.random().toString(36).substring(2, 8)}`;
-  (svc as any).transactions.set(txId, {
-    id: txId,
-    storeId,
-    total,
-    createdAt: date,
-    platformFeeRate,
-    items,
-  });
-  return txId;
-}
+// ── Mock PrismaService ──────────────────────────────────────────────────────
+
+const mockPrisma = {
+  transaction: {
+    findMany: vi.fn(),
+    findUnique: vi.fn(),
+  },
+  product: {
+    findUnique: vi.fn(),
+  },
+  $connect: vi.fn(),
+  $disconnect: vi.fn(),
+};
+
+// ── Test Suite ─────────────────────────────────────────────────────────────
 
 describe('ReportsService — Debug orderCount', () => {
   let svc: ReportsService;
 
   beforeEach(() => {
-    svc = new ReportsService();
+    svc = new ReportsService(mockPrisma as any);
   });
 
-  it('should count today\'s orders correctly', () => {
+  it('should count today\'s orders correctly', async () => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    createTransactionWithDate(svc, 'store_1', 100000n, today, 0);
-    createTransactionWithDate(svc, 'store_1', 200000n, today, 0);
+    const mockTransactions = [
+      {
+        id: 'tx1',
+        storeId: 'store_1',
+        total: 100000n,
+        createdAt: today,
+        platformFeeRate: 0,
+        transactionItems: [],
+      },
+      {
+        id: 'tx2',
+        storeId: 'store_1',
+        total: 200000n,
+        createdAt: today,
+        platformFeeRate: 0,
+        transactionItems: [],
+      },
+    ];
 
     const yesterday = new Date(today);
     yesterday.setDate(yesterday.getDate() - 1);
-    createTransactionWithDate(svc, 'store_1', 300000n, yesterday, 0);
 
-    const dashboard = svc.getDashboardKpis('store_1', today);
+    const mockYesterdayTransaction = {
+      id: 'tx3',
+      storeId: 'store_1',
+      total: 300000n,
+      createdAt: yesterday,
+      platformFeeRate: 0,
+      transactionItems: [],
+    };
+
+    // Mock findMany to return mockTransactions for today, mockYesterdayTransaction for yesterday
+    mockPrisma.transaction.findMany.mockImplementation(({ where }) => {
+      if (where.createdAt?.lte && where.createdAt?.gte) {
+        // Today filter
+        return mockTransactions;
+      }
+      return [mockYesterdayTransaction];
+    });
+    mockPrisma.product.findUnique.mockResolvedValue({ name: 'Product A' });
+
+    const dashboard = await svc.getDashboardKpis('store_1', today);
 
     console.log('todayTransactions:', dashboard.todayRevenue);
     console.log('orderCount type:', typeof dashboard.orderCount);
