@@ -1,0 +1,12 @@
+{
+  "task_id": "t_5ffad87f",
+  "contract_path": "/Users/khoala/Work/myproject/pos-omnichannel/.specify/contracts/sprint-1-controller-gap.md",
+  "generated_at": "2026-08-25T08:09:11.803617+00:00",
+  "verification_steps": [
+    "Type check passed",
+    "Unit tests passed",
+    "Contract compliance verified"
+  ],
+  "contract_summary": "# Execution Contract: Sprint 1 — Backend Controller Gap\n\n**Compiled:** 2026-08-25\n**Task Set:** Sprint 1 (5-7 ngày)\n**Project:** pos-omnichannel\n\n## 1. Scope\n\n### Cho phép sửa\n- `apps/server/src/modules/categories/categories.controller.ts` — tạo mới\n- `apps/server/src/modules/inventory/inventory.controller.ts` — tạo mới\n- `apps/server/src/modules/online-orders/online-orders.controller.ts` — tạo mới\n- `apps/server/src/modules/multi-store/multi-store.controller.ts` — tạo mới\n- `apps/server/src/mod...",
+  "status": "PASSED"
+}

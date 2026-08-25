@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { IPlatformAdapter, OrderItem, PlatformType } from './adapters/base.adapter';
+import { IPlatformAdapter, OrderItem } from './adapters/base.adapter';
 
 @Injectable()
 export class PlatformImportService {

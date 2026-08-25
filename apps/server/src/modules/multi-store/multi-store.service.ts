@@ -104,6 +104,31 @@ export class MultiStoreService {
   }
 
   /**
+   * Update store by ID.
+   */
+  updateStore(id: string, dto: { name?: string; address?: string }): Store {
+    const store = this.stores.get(id);
+    if (!store) {
+      throw new BadRequestException(`Store with ID "${id}" not found`);
+    }
+    if (dto.name !== undefined) {
+      if (dto.name.trim() === '') {
+        throw new BadRequestException('Store name cannot be empty');
+      }
+      if (dto.name.length > 100) {
+        throw new BadRequestException('Store name must be at most 100 characters');
+      }
+      this.storesByName.delete(store.name);
+      store.name = dto.name.trim();
+      this.storesByName.set(store.name, id);
+    }
+    if (dto.address !== undefined) {
+      store.address = dto.address;
+    }
+    return store;
+  }
+
+  /**
    * Get store by name.
    */
   getStoreByName(name: string): Store | undefined {

@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { PlatformImportService } from './platform-import.service';
-import { IPlatformAdapter, OrderItem, PlatformType } from './adapters/base.adapter';
+import { IPlatformAdapter, OrderItem } from './adapters/base.adapter';
 
 // Mock adapter for testing
 class MockAdapter implements IPlatformAdapter {
