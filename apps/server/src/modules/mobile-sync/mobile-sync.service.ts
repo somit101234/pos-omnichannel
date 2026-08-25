@@ -1,4 +1,5 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
+import * as bcrypt from 'bcrypt';
 
 // ── Types ───────────────────────────────────────────────────────────────────
 
@@ -155,7 +156,7 @@ export class MobileSyncService {
     const user: User = {
       id,
       username,
-      passwordHash: `hashed_${password}`, // Simplified for tests
+      passwordHash: await bcrypt.hash(password, 12),
       role,
       storeId,
     };
@@ -185,9 +186,9 @@ export class MobileSyncService {
       throw new BadRequestException('Invalid credentials');
     }
 
-    // Simplified password check for tests
-    const expectedHash = `hashed_${password}`;
-    if (user.passwordHash !== expectedHash) {
+    // Password check with bcrypt
+    const isPasswordValid = await bcrypt.compare(password, user.passwordHash);
+    if (!isPasswordValid) {
       throw new BadRequestException('Invalid credentials');
     }
 
