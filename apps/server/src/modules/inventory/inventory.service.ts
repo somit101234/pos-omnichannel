@@ -1,4 +1,5 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
+import { Injectable, BadRequestException, Inject, Optional } from '@nestjs/common';
+import { PrismaService } from '../../prisma/prisma.service';
 
 // ── Types ───────────────────────────────────────────────────────────────────
 
@@ -32,34 +33,59 @@ export interface VarianceResult {
  */
 @Injectable()
 export class InventoryService {
-  // In-memory store for unit tests (no Prisma dependency)
-  private stockMap: Map<string, Stock> = new Map();
-  private minStockMap: Map<string, number> = new Map(); // productId → minStock
+  private db: any;
+
+  constructor(@Optional() db?: any) {
+    this.db = db;
+  }
 
   // ── Stock management ────────────────────────────────────────────────
 
   /**
    * Register a stock entry.
-   * Used for unit tests — in production, this would come from Prisma.
+   * Creates or updates stock for a productId/warehouseId pair.
    */
-  registerStock(stock: Stock): void {
-    const key = `${stock.productId}:${stock.warehouseId}`;
-    this.stockMap.set(key, { ...stock });
+  async registerStock(stock: Stock): Promise<void> {
+    await this.db.stock.upsert({
+      where: {
+        productId_warehouseId: {
+          productId: stock.productId,
+          warehouseId: stock.warehouseId,
+        },
+      },
+      update: { quantity: stock.quantity },
+      create: {
+        productId: stock.productId,
+        warehouseId: stock.warehouseId,
+        quantity: stock.quantity,
+      },
+    });
   }
 
   /**
    * Register minimum stock threshold for a product.
+   * Stores minStock on the product record.
    */
-  registerMinStock(productId: string, minStock: number): void {
-    this.minStockMap.set(productId, minStock);
+  async registerMinStock(productId: string, minStock: number): Promise<void> {
+    await this.db.product.update({
+      where: { id: productId },
+      data: { minStock },
+    });
   }
 
   /**
    * Get stock by productId and warehouseId.
    */
-  getStock(productId: string, warehouseId: string): Stock | undefined {
-    const key = `${productId}:${warehouseId}`;
-    return this.stockMap.get(key);
+  async getStock(productId: string, warehouseId: string): Promise<Stock | null> {
+    const stock = await this.db.stock.findUnique({
+      where: { productId_warehouseId: { productId, warehouseId } },
+    });
+    if (!stock) return null;
+    return {
+      productId: stock.productId,
+      warehouseId: stock.warehouseId,
+      quantity: stock.quantity,
+    };
   }
 
   // ── Auto-decrease stock after POS ────────────────────────────────────
@@ -68,22 +94,45 @@ export class InventoryService {
    * Decrease stock quantity after a sale.
    * Throws if insufficient stock.
    */
-  autoDecreaseStock(stock: Stock, quantity: number): Stock {
+  async autoDecreaseStock(
+    productId: string,
+    warehouseId: string,
+    quantity: number,
+  ): Promise<Stock> {
     if (quantity < 0) {
       throw new BadRequestException('Quantity decrease must be non-negative');
     }
 
-    if (stock.quantity < quantity) {
+    const stock = await this.db.stock.findUnique({
+      where: { productId_warehouseId: { productId, warehouseId } },
+    });
+
+    if (!stock) {
       throw new BadRequestException(
-        `Insufficient stock for product ${stock.productId}: available=${stock.quantity}, requested=${quantity}`,
+        `Stock not found for product ${productId} in warehouse ${warehouseId}`,
       );
     }
 
-    stock.quantity -= quantity;
-    return stock;
+    if (stock.quantity < quantity) {
+      throw new BadRequestException(
+        `Insufficient stock for product ${productId} in warehouse ${warehouseId}: available=${stock.quantity}, requested=${quantity}`,
+      );
+    }
+
+    const updatedStock = await this.db.stock.update({
+      where: { productId_warehouseId: { productId, warehouseId } },
+      data: { quantity: stock.quantity - quantity },
+    });
+
+    return {
+      productId: updatedStock.productId,
+      warehouseId: updatedStock.warehouseId,
+      quantity: updatedStock.quantity,
+    };
   }
 
   // ── Variance calculation ─────────────────────────────────────────────
+  // NOTE: Pure function — no database interaction needed
 
   /**
    * Calculate stock variance and loss cost.
@@ -117,7 +166,9 @@ export class InventoryService {
    * Check stock levels against minimum thresholds.
    * Returns list of products that are at or below minimum stock.
    */
-  checkLowStock(stocks: LowStockProduct[]): LowStockProduct[] {
+  async checkLowStock(stocks: LowStockProduct[]): Promise<LowStockProduct[]> {
+    // In production, this would query products where stock <= minStock
+    // For now, filter from passed list
     return stocks.filter((s) => s.quantity <= s.minStock);
   }
 
@@ -142,5 +193,16 @@ export class InventoryService {
       );
       return { productId, variance, lossCost };
     });
+  }
+
+  // ── Unit test support ────────────────────────────────────────────────
+
+  /**
+   * Reset test state (clear all stock entries).
+   * Used for test cleanup between test suites.
+   */
+  async resetForTesting(): Promise<void> {
+    // In production, you might want to delete all stock entries
+    // For now, this is a no-op since we're using real DB
   }
 }

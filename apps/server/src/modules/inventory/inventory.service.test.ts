@@ -189,6 +189,12 @@ describe('InventoryService', () => {
     });
 
     it('AC3: throws on negative quantity', async () => {
+      (service as any).db.stock._findUniqueResult = {
+        productId,
+        warehouseId,
+        quantity: 100,
+        lastUpdated: new Date(),
+      };
       await expect(service.autoDecreaseStock(productId, warehouseId, -5)).rejects.toThrow(
         'non-negative',
       );
