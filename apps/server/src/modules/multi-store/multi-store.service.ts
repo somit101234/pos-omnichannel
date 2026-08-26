@@ -69,7 +69,7 @@ export class MultiStoreService {
       name: store.name,
       address: store.address,
       ownerId: store.ownerId,
-      createdAt: store.created_AT,
+      createdAt: store.createdAt,
     };
   }
 
@@ -80,7 +80,7 @@ export class MultiStoreService {
       name: s.name,
       address: s.address,
       ownerId: s.ownerId,
-      createdAt: s.created_AT,
+      createdAt: s.createdAt,
     }));
   }
 
@@ -96,7 +96,7 @@ export class MultiStoreService {
       name: store.name,
       address: store.address,
       ownerId: store.ownerId,
-      createdAt: store.created_AT,
+      createdAt: store.createdAt,
     };
   }
 
@@ -132,7 +132,7 @@ export class MultiStoreService {
       name: updated.name,
       address: updated.address,
       ownerId: updated.ownerId,
-      createdAt: updated.created_AT,
+      createdAt: updated.createdAt,
     };
   }
 
@@ -148,7 +148,7 @@ export class MultiStoreService {
       name: store.name,
       address: store.address,
       ownerId: store.ownerId,
-      createdAt: store.created_AT,
+      createdAt: store.createdAt,
     };
   }
 
@@ -180,7 +180,7 @@ export class MultiStoreService {
       storeId: warehouse.storeId,
       name: warehouse.name,
       address: warehouse.address,
-      createdAt: warehouse.created_AT,
+      createdAt: warehouse.createdAt,
     };
   }
 
@@ -199,7 +199,7 @@ export class MultiStoreService {
       storeId: w.storeId,
       name: w.name,
       address: w.address,
-      createdAt: w.created_AT,
+      createdAt: w.createdAt,
     }));
   }
 
@@ -215,7 +215,7 @@ export class MultiStoreService {
       storeId: warehouse.storeId,
       name: warehouse.name,
       address: warehouse.address,
-      createdAt: warehouse.created_AT,
+      createdAt: warehouse.createdAt,
     };
   }
 
