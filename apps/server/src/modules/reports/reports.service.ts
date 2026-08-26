@@ -121,7 +121,22 @@ export class ReportsService {
     const startOfDay = new Date(referenceDate.getFullYear(), referenceDate.getMonth(), referenceDate.getDate());
     const endOfDay = new Date(startOfDay.getTime() + 24 * 60 * 60 * 1000 - 1);
 
-    // Get today's transactions with items
+    // Aggregate transaction items by productId to get quantities
+    const productQuantityAggregates = await this.prisma.transactionItem.groupBy({
+      by: ['productId'],
+      where: {
+        transaction: {
+          storeId,
+          createdAt: {
+            gte: startOfDay,
+            lte: endOfDay,
+          },
+        },
+      },
+      _sum: { quantity: true },
+    });
+
+    // Get today's transactions for revenue and order count
     const todayTransactions = await this.prisma.transaction.findMany({
       where: {
         storeId,
@@ -129,9 +144,6 @@ export class ReportsService {
           gte: startOfDay,
           lte: endOfDay,
         },
-      },
-      include: {
-        transactionItems: true,
       },
     });
 
@@ -144,45 +156,26 @@ export class ReportsService {
     // Count orders
     const orderCount = todayTransactions.length;
 
-    // Calculate top 5 products by quantity sold today
-    const productQuantities: Map<string, number> = new Map();
-    for (const tx of todayTransactions) {
-      for (const item of tx.transactionItems) {
-        const currentQty = productQuantities.get(item.productId) || 0;
-        productQuantities.set(item.productId, currentQty + item.quantity);
-      }
-    }
-
-    // Get product details for top products
+    // Build top products with name from Product table
     const topProducts: DashboardKPIs['topProducts'] = [];
-    for (const [productId, quantity] of productQuantities.entries()) {
+    for (const agg of productQuantityAggregates) {
       const product = await this.prisma.product.findUnique({
-        where: { id: productId, storeId },
-        select: { name: true },
+        where: { id: agg.productId, storeId },
+        select: { name: true, salePrice: true },
       });
       if (!product) continue;
 
-      // Find the sale price from today's transactions
-      let price = 0n;
-      for (const tx of todayTransactions) {
-        const item = tx.transactionItems.find((i: { productId: string }) => i.productId === productId);
-        if (item) {
-          price = item.price;
-          break;
-        }
-      }
-
       topProducts.push({
-        productId,
+        productId: agg.productId,
         productName: product.name,
-        quantity,
-        revenue: price * BigInt(quantity),
+        quantity: agg._sum.quantity ?? 0,
+        revenue: product.salePrice * BigInt(agg._sum.quantity ?? 0),
       });
     }
 
     // Sort by quantity and take top 5
     topProducts.sort((a, b) => Number(b.quantity - a.quantity));
-    topProducts.slice(0, 5);
+    topProducts.length = Math.min(topProducts.length, 5);
 
     return {
       todayRevenue,
@@ -219,7 +212,7 @@ export class ReportsService {
     for (const tx of transactions) {
       totalRevenue += tx.total;
       if (tx.platformFeeRate) {
-        totalPlatformFee += tx.total * BigInt(Math.round(tx.platformFeeRate * 100)) / 100n;
+        totalPlatformFee += (tx.total * BigInt(Math.round(tx.platformFeeRate * 100))) / 100n;
       }
     }
 
@@ -269,7 +262,7 @@ export class ReportsService {
 
       // Calculate platform fee
       if (tx.platformFeeRate) {
-        totalPlatformFee += tx.total * BigInt(Math.round(tx.platformFeeRate * 100)) / 100n;
+        totalPlatformFee += (tx.total * BigInt(Math.round(tx.platformFeeRate * 100))) / 100n;
       }
 
       // Calculate cost from items
