@@ -169,7 +169,7 @@ export class ReportsService {
         productId: agg.productId,
         productName: product.name,
         quantity: agg._sum.quantity ?? 0,
-        revenue: product.salePrice * BigInt(agg._sum.quantity ?? 0),
+        revenue: product.salePrice * BigInt(String(agg._sum.quantity ?? 0)),
       });
     }
 

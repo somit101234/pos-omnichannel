@@ -49,6 +49,9 @@ const mockPrisma = {
     findMany: vi.fn(),
     findUnique: vi.fn(),
   },
+  transactionItem: {
+    groupBy: vi.fn(),
+  },
   product: {
     findUnique: vi.fn(),
   },
@@ -63,6 +66,7 @@ describe('ReportsService — Dashboard & Revenue/Profit Reports', () => {
 
   beforeEach(() => {
     svc = new ReportsService(mockPrisma as any);
+    mockPrisma.transactionItem.groupBy.mockResolvedValue([]);
   });
 
   // ================================================================
@@ -220,8 +224,22 @@ describe('ReportsService — Dashboard & Revenue/Profit Reports', () => {
           p4: 'Product D',
           p5: 'Product E',
         };
-        return { name: names[id] || 'Unknown' };
+        const prices: Record<string, bigint> = {
+          p1: 20000n,
+          p2: 30000n,
+          p3: 15000n,
+          p4: 25000n,
+          p5: 18000n,
+        };
+        return { name: names[id] || 'Unknown', salePrice: prices[id] || 0n };
       });
+      mockPrisma.transactionItem.groupBy.mockResolvedValue([
+        { productId: 'p2', _sum: { quantity: 2 } },
+        { productId: 'p1', _sum: { quantity: 1 } },
+        { productId: 'p3', _sum: { quantity: 1 } },
+        { productId: 'p4', _sum: { quantity: 1 } },
+        { productId: 'p5', _sum: { quantity: 1 } },
+      ]);
 
       const dashboard = await svc.getDashboardKpis('store_1', today);
 
