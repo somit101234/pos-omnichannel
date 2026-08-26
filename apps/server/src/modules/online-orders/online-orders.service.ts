@@ -1,5 +1,5 @@
 // Online Orders service — Prisma integration
-import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
+import { Injectable, Optional, NotFoundException, ConflictException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 
 export enum OnlineOrderStatus {
@@ -29,16 +29,16 @@ const ACCEPT_THRESHOLD_MS = 15 * 60 * 1000; // 15 minutes
 
 @Injectable()
 export class OnlineOrdersService {
-  constructor(private prisma: PrismaService) {}
+  constructor(@Optional() private readonly prisma?: PrismaService) {}
 
   async createOrder(id: string, customerId: string, items: OrderItem[]): Promise<OnlineOrder> {
-    const existing = await this.prisma.onlineOrder.findUnique({ where: { id } });
+    const existing = await this.prisma!.onlineOrder.findUnique({ where: { id } });
     if (existing) {
       throw new ConflictException(`Order ${id} already exists`);
     }
 
     const now = new Date();
-    const order = await this.prisma.onlineOrder.create({
+    const order = await this.prisma!.onlineOrder.create({
       data: {
         id,
         customerId,
@@ -53,7 +53,7 @@ export class OnlineOrdersService {
   }
 
   async getOrder(id: string): Promise<OnlineOrder> {
-    const order = await this.prisma.onlineOrder.findUnique({ where: { id } });
+    const order = await this.prisma!.onlineOrder.findUnique({ where: { id } });
     if (!order) {
       throw new NotFoundException('Order not found');
     }
@@ -69,7 +69,7 @@ export class OnlineOrdersService {
       throw new ConflictException('Order is already PROCESSING');
     }
 
-    const updated = await this.prisma.onlineOrder.update({
+    const updated = await this.prisma!.onlineOrder.update({
       where: { id },
       data: {
         status: OnlineOrderStatus.PROCESSING,
@@ -82,7 +82,7 @@ export class OnlineOrdersService {
   async rejectOrder(id: string, reason: string): Promise<OnlineOrder> {
     const order = await this.getOrder(id);
 
-    const updated = await this.prisma.onlineOrder.update({
+    const updated = await this.prisma!.onlineOrder.update({
       where: { id },
       data: {
         status: OnlineOrderStatus.REJECTED,
@@ -99,7 +99,7 @@ export class OnlineOrdersService {
       throw new ConflictException('Order must be PROCESSING before preparing');
     }
 
-    const updated = await this.prisma.onlineOrder.update({
+    const updated = await this.prisma!.onlineOrder.update({
       where: { id },
       data: {
         status: OnlineOrderStatus.READY,
@@ -115,7 +115,7 @@ export class OnlineOrdersService {
       throw new ConflictException('Order must be READY before delivering');
     }
 
-    const updated = await this.prisma.onlineOrder.update({
+    const updated = await this.prisma!.onlineOrder.update({
       where: { id },
       data: {
         status: OnlineOrderStatus.DELIVERED,
@@ -126,7 +126,7 @@ export class OnlineOrdersService {
   }
 
   async isOrderOverdue(id: string, now: Date = new Date()): Promise<boolean> {
-    const order = await this.prisma.onlineOrder.findUnique({ where: { id } });
+    const order = await this.prisma!.onlineOrder.findUnique({ where: { id } });
     if (!order) {
       throw new NotFoundException('Order not found');
     }
@@ -139,18 +139,19 @@ export class OnlineOrdersService {
   }
 
   async getAllOrders(): Promise<OnlineOrder[]> {
-    const orders = await this.prisma.onlineOrder.findMany();
+    const orders = await this.prisma!.onlineOrder.findMany();
     return orders.map((o: any) => this._mapToEntity(o));
   }
 
   async getPendingOrders(): Promise<OnlineOrder[]> {
-    const orders = await this.prisma.onlineOrder.findMany({
+    const orders = await this.prisma!.onlineOrder.findMany({
       where: { status: OnlineOrderStatus.PENDING },
     });
     return orders.map((o: any) => this._mapToEntity(o));
   }
 
   async reset(): Promise<void> {
+    if (!this.prisma) return;
     await this.prisma.onlineOrder.deleteMany();
   }
 
